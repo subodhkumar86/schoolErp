@@ -3,7 +3,7 @@
 import { useExams } from "../hooks/useExams";
 
 export default function ExamStats() {
-  const { data: response } = useExams();
+  const { data: response } = useExams({ limit: 1000 });
   const exams = response?.data ?? [];
   const total = response?.total ?? 0;
 

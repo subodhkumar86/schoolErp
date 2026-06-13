@@ -4,15 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { useStudents } from "../hooks/useStudents";
-import { useDeleteStudent } from "../hooks/useDeleteStudent";
-
 import Loader from "@/components/shared/Loader";
 import EmptyState from "@/components/shared/EmptyState";
 import Pagination from "@/components/shared/Pagination";
 import StudentsFilters from "./StudentsFilters";
 import DeleteStudentDialog from "./DeleteStudentDialog";
-
-import { usePagination } from "@/hooks/usePagination";
 
 import {
   Table,
@@ -24,7 +20,6 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Eye, Pencil, Trash2 } from "lucide-react";
-import { toast } from "sonner";
 
 interface Student {
   _id: string;

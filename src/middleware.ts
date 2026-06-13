@@ -1,0 +1,111 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
+
+const JWT_SECRET = process.env.JWT_SECRET || "eduflow_secret_key_32_chars_long_minimum_value";
+const KEY = new TextEncoder().encode(JWT_SECRET);
+
+const ROLE_PERMISSIONS: Record<string, string[]> = {
+  "Super Admin": [
+    "dashboard", "students", "teachers", "attendance", "classes",
+    "exams", "results", "fees", "library", "inventory", "homework",
+    "notices", "notifications", "reports", "settings"
+  ],
+  Admin: [
+    "dashboard", "students", "teachers", "attendance", "classes",
+    "exams", "results", "fees", "library", "inventory", "homework",
+    "notices", "notifications", "reports", "settings"
+  ],
+  Teacher: [
+    "dashboard", "students", "attendance", "classes", "exams",
+    "results", "homework", "notices", "notifications"
+  ],
+  Student: [
+    "dashboard", "attendance", "exams", "results", "homework",
+    "library", "notices", "notifications"
+  ],
+  Accountant: [
+    "dashboard", "fees", "inventory", "notices", "notifications", "reports"
+  ],
+  Librarian: [
+    "dashboard", "library", "notices", "notifications"
+  ],
+};
+
+const MODULE_ROUTES: Record<string, string> = {
+  "dashboard": "dashboard",
+  "students": "students",
+  "teachers": "teachers",
+  "attendance": "attendance",
+  "classes": "classes",
+  "timetable": "classes",
+  "exams": "exams",
+  "results": "results",
+  "fees": "fees",
+  "library": "library",
+  "inventory": "inventory",
+  "homework": "homework",
+  "transport": "fees",
+  "notices": "notices",
+  "notifications": "notifications",
+  "reports": "reports",
+  "settings": "settings",
+};
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  const isAuthPage = pathname === "/login" || pathname === "/forgot-password";
+  const token = request.cookies.get("auth_token")?.value;
+
+  let user: { userId: string; username: string; email: string; role: string } | null = null;
+
+  if (token) {
+    try {
+      const { payload } = await jwtVerify(token, KEY);
+      user = payload as unknown as { userId: string; username: string; email: string; role: string };
+    } catch {
+      // Token expired or invalid
+    }
+  }
+
+  // If visiting login and already authenticated, redirect to dashboard
+  if (isAuthPage && user) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  // If not authenticated and visiting protected pages, redirect to login
+  if (!isAuthPage && !user) {
+    // Exclude static assets, public paths, and API routes (APIs handle their own checks)
+    const isPublicPath = pathname === "/" || pathname === "/pricing";
+    const isStatic = pathname.includes(".") || pathname.startsWith("/_next") || pathname.startsWith("/api");
+    
+    if (!isPublicPath && !isStatic) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+    return NextResponse.next();
+  }
+
+  // Enforce RBAC permission checks
+  if (user) {
+    // Find matching route segment
+    const segment = pathname.split("/")[1];
+    const moduleName = MODULE_ROUTES[segment];
+
+    if (moduleName) {
+      const allowedModules = ROLE_PERMISSIONS[user.role] || [];
+      if (!allowedModules.includes(moduleName)) {
+        // Forbidden: Redirect to dashboard or access denied
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|api/auth/login|api/auth/logout).*)",
+  ],
+};

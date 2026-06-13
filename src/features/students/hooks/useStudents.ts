@@ -1,9 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import type { Student } from "../types/student";
 
 interface StudentsResponse {
-  data: Record<string, unknown>[];
+  data: Student[];
   total: number;
   page: number;
   limit: number;

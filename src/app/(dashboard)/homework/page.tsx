@@ -1,24 +1,14 @@
+import HomeworkHeader from "@/features/homework/components/HomeworkHeader";
 import HomeworkStats from "@/features/homework/components/HomeworkStats";
-import HomeworkList from "@/features/homework/components/HomeworkList";
-import SubmissionStats from "@/features/homework/components/SubmissionStats";
+import HomeworkTable from "@/features/homework/components/HomeworkTable";
 
 export default function HomeworkPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Homework Management</h1>
-
-        <p className="text-muted-foreground">
-          Manage assignments and submissions
-        </p>
-      </div>
-
+      <HomeworkHeader />
       <HomeworkStats />
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <HomeworkList />
-        <SubmissionStats />
-      </div>
+      <HomeworkTable />
     </div>
   );
 }
+

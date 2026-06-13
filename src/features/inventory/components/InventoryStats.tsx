@@ -1,28 +1,67 @@
-import { inventoryStats } from "../mock/inventory";
+"use client";
+
+import { Package, ShieldCheck, Wrench, Trash } from "lucide-react";
+import type { ReactNode } from "react";
+import { useInventories } from "../hooks/useInventories";
 
 export default function InventoryStats() {
+  const { data: response } = useInventories({ limit: 1 });
+  const stats = response?.stats || {
+    totalAssets: 0,
+    activeAssets: 0,
+    maintenanceAssets: 0,
+    retiredAssets: 0,
+  };
+
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-      <div className="rounded-2xl bg-blue-600 p-6 text-white">
-        <p>Total Assets</p>
-        <h2 className="text-3xl font-bold">{inventoryStats.totalAssets}</h2>
-      </div>
+      <StatCard
+        title="Total Asset Copies"
+        value={stats.totalAssets}
+        icon={<Package className="h-10 w-10 text-primary" />}
+        color=""
+      />
 
-      <div className="rounded-2xl bg-green-600 p-6 text-white">
-        <p>Active Assets</p>
-        <h2 className="text-3xl font-bold">{inventoryStats.activeAssets}</h2>
-      </div>
+      <StatCard
+        title="Active Assets"
+        value={stats.activeAssets}
+        icon={<ShieldCheck className="h-10 w-10 text-green-500" />}
+        color="text-green-500"
+      />
 
-      <div className="rounded-2xl bg-orange-500 p-6 text-white">
-        <p>Maintenance</p>
-        <h2 className="text-3xl font-bold">
-          {inventoryStats.maintenanceAssets}
-        </h2>
-      </div>
+      <StatCard
+        title="In Maintenance"
+        value={stats.maintenanceAssets}
+        icon={<Wrench className="h-10 w-10 text-orange-500" />}
+        color="text-orange-500"
+      />
 
-      <div className="rounded-2xl bg-red-500 p-6 text-white">
-        <p>Retired</p>
-        <h2 className="text-3xl font-bold">{inventoryStats.retiredAssets}</h2>
+      <StatCard
+        title="Retired / Scrapped"
+        value={stats.retiredAssets}
+        icon={<Trash className="h-10 w-10 text-red-500" />}
+        color="text-red-500"
+      />
+    </div>
+  );
+}
+
+interface StatCardProps {
+  title: string;
+  value: number | string;
+  icon: ReactNode;
+  color: string;
+}
+
+function StatCard({ title, value, icon, color }: StatCardProps) {
+  return (
+    <div className="rounded-3xl border bg-card p-6 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-muted-foreground">{title}</p>
+          <h3 className={`mt-2 text-2xl font-bold ${color}`}>{value}</h3>
+        </div>
+        {icon}
       </div>
     </div>
   );

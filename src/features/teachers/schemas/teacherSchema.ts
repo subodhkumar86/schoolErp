@@ -13,9 +13,15 @@ export const teacherSchema = z.object({
 
   qualification: z.string().optional(),
 
-  experience: z.coerce.number().min(0).optional(),
+  experience: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? undefined : Number(val)),
+    z.number().min(0).optional()
+  ),
 
-  salary: z.coerce.number().min(0).optional(),
+  salary: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? undefined : Number(val)),
+    z.number().min(0).optional()
+  ),
 
   address: z.string().optional(),
 

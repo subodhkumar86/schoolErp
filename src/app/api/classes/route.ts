@@ -8,6 +8,8 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search") || "";
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
     const status = searchParams.get("status") || "";
 
     const query: Record<string, unknown> = {};
@@ -19,13 +21,16 @@ export async function GET(request: Request) {
     }
     if (status) query.status = status;
 
-    const classes = await Class.find(query)
-      .populate("classTeacher", "name employeeId")
-      .sort({ name: 1, section: 1 });
-
+    const skip = (page - 1) * limit;
     const total = await Class.countDocuments(query);
 
-    return NextResponse.json({ data: classes, total });
+    const classes = await Class.find(query)
+      .populate("classTeacher", "name employeeId")
+      .sort({ name: 1, section: 1 })
+      .skip(skip)
+      .limit(limit);
+
+    return NextResponse.json({ data: classes, total, page, limit });
   } catch (error) {
     return NextResponse.json(
       { message: "Failed to fetch classes", error },

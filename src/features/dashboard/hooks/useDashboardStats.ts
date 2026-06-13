@@ -11,6 +11,25 @@ export interface DashboardStats {
   totalRevenue: number;
   pendingFees: number;
   todayAttendance: number;
+  recentStudents: Array<{
+    _id: string;
+    name: string;
+    studentClass: string;
+    section: string;
+  }>;
+  recentNotices: Array<{
+    _id: string;
+    title: string;
+    content: string;
+    postedDate: string;
+  }>;
+  upcomingExams: Array<{
+    _id: string;
+    name: string;
+    subject: string;
+    className: string;
+    date: string;
+  }>;
 }
 
 export function useDashboardStats() {

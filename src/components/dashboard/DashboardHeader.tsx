@@ -4,7 +4,7 @@ export default function DashboardHeader() {
       <h1 className="text-4xl font-bold">Welcome Back 👋</h1>
 
       <p className="mt-2 text-blue-100">
-        Here's what's happening in your school today.
+        {"Here's what's happening in your school today."}
       </p>
     </div>
   );

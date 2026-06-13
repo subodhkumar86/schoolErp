@@ -8,17 +8,17 @@ export default function Testimonials() {
 
         <div className="grid gap-6 md:grid-cols-3">
           <div className="rounded-2xl border p-6">
-            <p>"Best ERP platform we have used."</p>
+            <p>{"\"Best ERP platform we have used.\""}</p>
             <h4 className="mt-4 font-semibold">Principal</h4>
           </div>
 
           <div className="rounded-2xl border p-6">
-            <p>"Attendance and fees became easy."</p>
+            <p>{"\"Attendance and fees became easy.\""}</p>
             <h4 className="mt-4 font-semibold">Administrator</h4>
           </div>
 
           <div className="rounded-2xl border p-6">
-            <p>"Excellent reporting features."</p>
+            <p>{"\"Excellent reporting features.\""}</p>
             <h4 className="mt-4 font-semibold">School Owner</h4>
           </div>
         </div>

@@ -1,6 +1,11 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import CreateStudentForm from "@/features/students/components/CreateStudentForm";
 
 export default function CreateStudentPage() {
+  const router = useRouter();
+
   return (
     <div className="space-y-6">
       <div>
@@ -9,7 +14,7 @@ export default function CreateStudentPage() {
         <p className="text-muted-foreground">Create a new student record</p>
       </div>
 
-      <CreateStudentForm />
+      <CreateStudentForm onSuccess={() => router.push("/students")} />
     </div>
   );
 }

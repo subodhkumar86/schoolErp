@@ -1,8 +1,20 @@
 export interface Student {
-  id: number;
+  _id: string;
   name: string;
+  email?: string;
+  phone?: string;
   rollNumber: string;
-  class: string;
-  attendance: number;
+  studentClass: string;
+  section?: string;
+  gender?: "Male" | "Female" | "Other";
+  dateOfBirth?: string;
+  admissionDate?: string;
+  address?: string;
+  parentName?: string;
+  parentPhone?: string;
+  profileImage?: string;
+  attendance?: number;
   status: "Active" | "Inactive";
+  createdAt: string;
+  updatedAt: string;
 }

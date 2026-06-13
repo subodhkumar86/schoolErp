@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
@@ -24,7 +24,7 @@ export default function CreateTeacherForm({ onSuccess }: Props) {
     reset,
     formState: { errors },
   } = useForm<TeacherFormValues>({
-    resolver: zodResolver(teacherSchema),
+    resolver: zodResolver(teacherSchema) as unknown as Resolver<TeacherFormValues>,
 
     defaultValues: {
       name: "",

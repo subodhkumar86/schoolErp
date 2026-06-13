@@ -3,10 +3,8 @@
 import {
   GraduationCap,
   Users,
-  BookOpen,
   DollarSign,
   CalendarCheck,
-  TrendingUp,
 } from "lucide-react";
 
 import StatsCard from "@/components/dashboard/StatsCard";

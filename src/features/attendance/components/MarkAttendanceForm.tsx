@@ -23,6 +23,11 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
+interface PersonOption {
+  _id: string;
+  name: string;
+}
+
 interface Props {
   onSuccess: () => void;
 }
@@ -30,8 +35,6 @@ interface Props {
 export default function MarkAttendanceForm({ onSuccess }: Props) {
   const { data: studentsRes } = useStudents({ limit: 200 });
   const { data: teachersRes } = useTeachers({ limit: 200 });
-  const students = studentsRes?.data ?? [];
-  const teachers = teachersRes?.data ?? [];
 
   const createAttendance = useCreateAttendance();
 
@@ -53,7 +56,10 @@ export default function MarkAttendanceForm({ onSuccess }: Props) {
   });
 
   const entityType = watch("entityType");
-  const people = entityType === "Student" ? students : teachers;
+
+  const students = (studentsRes?.data ?? []) as PersonOption[];
+  const teachers = (teachersRes?.data ?? []) as unknown as PersonOption[];
+  const people: PersonOption[] = entityType === "Student" ? students : teachers;
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -86,9 +92,9 @@ export default function MarkAttendanceForm({ onSuccess }: Props) {
           {...register("entityId")}
         >
           <option value="">Select {entityType}</option>
-          {people.map((p: Record<string, unknown>) => (
-            <option key={p._id as string} value={p._id as string}>
-              {p.name as string}
+          {people.map((p) => (
+            <option key={p._id} value={p._id}>
+              {p.name}
             </option>
           ))}
         </select>

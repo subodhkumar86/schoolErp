@@ -8,6 +8,8 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search") || "";
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
     const className = searchParams.get("class") || "";
     const status = searchParams.get("status") || "";
 
@@ -21,10 +23,15 @@ export async function GET(request: Request) {
     if (className) query.className = className;
     if (status) query.status = status;
 
-    const exams = await Exam.find(query).sort({ date: -1 });
+    const skip = (page - 1) * limit;
     const total = await Exam.countDocuments(query);
 
-    return NextResponse.json({ data: exams, total });
+    const exams = await Exam.find(query)
+      .sort({ date: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    return NextResponse.json({ data: exams, total, page, limit });
   } catch (error) {
     return NextResponse.json(
       { message: "Failed to fetch exams", error },

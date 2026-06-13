@@ -2,6 +2,8 @@ import SchoolProfileForm from "@/features/settings/components/SchoolProfileForm"
 import ThemeSettings from "@/features/settings/components/ThemeSettings";
 import NotificationSettings from "@/features/settings/components/NotificationSettings";
 import UserPreferences from "@/features/settings/components/UserPreferences";
+import ChangePasswordForm from "@/features/settings/components/ChangePasswordForm";
+import SystemDiagnostics from "@/features/settings/components/SystemDiagnostics";
 
 export default function SettingsPage() {
   return (
@@ -20,6 +22,10 @@ export default function SettingsPage() {
       </div>
 
       <UserPreferences />
+
+      <ChangePasswordForm />
+
+      <SystemDiagnostics />
     </div>
   );
 }

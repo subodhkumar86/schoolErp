@@ -4,6 +4,8 @@ import Student from "@/models/Student";
 import Teacher from "@/models/Teacher";
 import Fee from "@/models/Fee";
 import Attendance from "@/models/Attendance";
+import Notice from "@/models/Notice";
+import Exam from "@/models/Exam";
 
 export async function GET() {
   try {
@@ -17,6 +19,9 @@ export async function GET() {
       totalRevenue,
       pendingFees,
       todayAttendance,
+      recentStudents,
+      recentNotices,
+      upcomingExams,
     ] = await Promise.all([
       Student.countDocuments(),
       Student.countDocuments({ status: "Active" }),
@@ -38,6 +43,9 @@ export async function GET() {
         },
         status: "Present",
       }),
+      Student.find({}).sort({ createdAt: -1 }).limit(5),
+      Notice.find({ status: "Active" }).sort({ postedDate: -1 }).limit(5),
+      Exam.find({ date: { $gte: new Date() } }).sort({ date: 1 }).limit(5),
     ]);
 
     return NextResponse.json({
@@ -49,6 +57,9 @@ export async function GET() {
       totalRevenue: totalRevenue[0]?.total ?? 0,
       pendingFees: pendingFees[0]?.total ?? 0,
       todayAttendance,
+      recentStudents,
+      recentNotices,
+      upcomingExams,
     });
   } catch (error) {
     return NextResponse.json(

@@ -1,3 +1,4 @@
+import InventoryHeader from "@/features/inventory/components/InventoryHeader";
 import InventoryStats from "@/features/inventory/components/InventoryStats";
 import AssetsTable from "@/features/inventory/components/AssetsTable";
 import AssetCategories from "@/features/inventory/components/AssetCategories";
@@ -6,22 +7,20 @@ import PurchaseRecords from "@/features/inventory/components/PurchaseRecords";
 export default function InventoryPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Inventory Management</h1>
-
-        <p className="text-muted-foreground">
-          Track school assets and purchases
-        </p>
-      </div>
+      <InventoryHeader />
 
       <InventoryStats />
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <AssetCategories />
-        <PurchaseRecords />
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-6">
+          <AssetsTable />
+        </div>
+        <div className="space-y-6">
+          <AssetCategories />
+          <PurchaseRecords />
+        </div>
       </div>
-
-      <AssetsTable />
     </div>
   );
 }
+

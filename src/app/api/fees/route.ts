@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Fee from "@/models/Fee";
+import Student from "@/models/Student";
 
 export async function GET(request: Request) {
   try {
     await connectDB();
 
     const { searchParams } = new URL(request.url);
+    const search = searchParams.get("search") || "";
     const status = searchParams.get("status") || "";
     const feeType = searchParams.get("feeType") || "";
     const page = parseInt(searchParams.get("page") || "1");
@@ -15,6 +17,15 @@ export async function GET(request: Request) {
     const query: Record<string, unknown> = {};
     if (status) query.status = status;
     if (feeType) query.feeType = feeType;
+
+    if (search) {
+      // Find students whose name matches search string
+      const students = await Student.find({
+        name: { $regex: search, $options: "i" },
+      }).select("_id");
+      const studentIds = students.map((s) => s._id);
+      query.studentId = { $in: studentIds };
+    }
 
     const skip = (page - 1) * limit;
     const total = await Fee.countDocuments(query);
@@ -26,6 +37,7 @@ export async function GET(request: Request) {
 
     // Aggregate stats
     const stats = await Fee.aggregate([
+      { $match: query },
       {
         $group: {
           _id: "$status",

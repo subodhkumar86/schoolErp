@@ -1,36 +1,32 @@
-const students = [
-  {
-    id: 1,
-    name: "Rahul Sharma",
-    class: "10-A",
-  },
-  {
-    id: 2,
-    name: "Priya Singh",
-    class: "9-B",
-  },
-  {
-    id: 3,
-    name: "Amit Kumar",
-    class: "8-A",
-  },
-];
+"use client";
+
+import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardStats";
+import Loader from "@/components/shared/Loader";
 
 export default function RecentStudents() {
+  const { data: stats, isLoading } = useDashboardStats();
+
+  if (isLoading) return <Loader />;
+
+  const students = stats?.recentStudents || [];
+
   return (
-    <div className="rounded-lg border p-6">
-      <h3 className="mb-4 text-lg font-semibold">Recent Students</h3>
+    <div className="rounded-3xl border bg-card p-6 shadow-sm">
+      <h3 className="mb-4 text-lg font-bold">Recent Admissions</h3>
 
       <div className="space-y-4">
-        {students.map((student) => (
-          <div key={student.id} className="flex items-center justify-between">
-            <span>{student.name}</span>
-
-            <span className="text-sm text-muted-foreground">
-              {student.class}
-            </span>
-          </div>
-        ))}
+        {students.length === 0 ? (
+          <p className="text-xs text-muted-foreground">No recent enrollments recorded</p>
+        ) : (
+          students.map((student) => (
+            <div key={student._id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
+              <span className="font-semibold text-sm text-foreground">{student.name}</span>
+              <span className="text-xs rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-primary">
+                Class {student.studentClass}-{student.section}
+              </span>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

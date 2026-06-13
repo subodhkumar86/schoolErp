@@ -1,10 +1,11 @@
 "use client";
 
-import { Bell, Search, ChevronDown } from "lucide-react";
+import { Bell, Search } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import ThemeToggle from "@/components/shared/ThemeToggle";
 import MobileSidebar from "./MobileSidebar";
+import UserMenu from "./UserMenu";
 
 export default function Navbar() {
   return (
@@ -49,19 +50,7 @@ export default function Navbar() {
           </button>
 
           {/* User */}
-          <div className="flex cursor-pointer items-center gap-3 rounded-xl border px-3 py-2 hover:bg-muted">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
-              A
-            </div>
-
-            <div className="hidden md:block">
-              <p className="text-sm font-semibold">Admin User</p>
-
-              <p className="text-xs text-muted-foreground">Super Admin</p>
-            </div>
-
-            <ChevronDown className="hidden h-4 w-4 md:block" />
-          </div>
+          <UserMenu />
         </div>
       </div>
     </header>

@@ -1,114 +1,80 @@
 import { NextResponse } from "next/server";
-
 import { connectDB } from "@/lib/mongodb";
 import Attendance from "@/models/Attendance";
 
-export async function GET(
-  request: Request,
-  {
-    params,
-  }: {
-    params: Promise<{
-      id: string;
-    }>;
-  },
-) {
+interface Params {
+  params: Promise<{ id: string }>;
+}
+
+export async function GET(_request: Request, { params }: Params) {
   try {
     await connectDB();
-
     const { id } = await params;
-
-    const attendance = await Attendance.findById(id).populate("entityId");
-
-    if (!attendance) {
+    const record = await Attendance.findById(id).populate("entityId");
+    if (!record) {
       return NextResponse.json(
-        {
-          message: "Attendance not found",
-        },
-        {
-          status: 404,
-        },
+        { message: "Attendance record not found" },
+        { status: 404 },
+      );
+    }
+    return NextResponse.json(record);
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Failed to fetch attendance record", error },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PUT(request: Request, { params }: Params) {
+  try {
+    await connectDB();
+    const { id } = await params;
+    const body = await request.json();
+
+    const record = await Attendance.findByIdAndUpdate(
+      id,
+      {
+        status: body.status,
+        remarks: body.remarks,
+        markedBy: body.markedBy,
+        date: body.date ? new Date(body.date) : undefined,
+      },
+      { new: true, runValidators: true },
+    );
+
+    if (!record) {
+      return NextResponse.json(
+        { message: "Attendance record not found" },
+        { status: 404 },
       );
     }
 
-    return NextResponse.json(attendance);
+    return NextResponse.json(record);
   } catch (error) {
     return NextResponse.json(
-      {
-        message: "Failed to fetch attendance",
-        error,
-      },
-      {
-        status: 500,
-      },
+      { message: "Failed to update attendance record", error },
+      { status: 500 },
     );
   }
 }
 
-export async function PUT(
-  request: Request,
-  {
-    params,
-  }: {
-    params: Promise<{
-      id: string;
-    }>;
-  },
-) {
+export async function DELETE(_request: Request, { params }: Params) {
   try {
     await connectDB();
-
     const { id } = await params;
-
-    const body = await request.json();
-
-    const attendance = await Attendance.findByIdAndUpdate(id, body, {
-      new: true,
-    });
-
-    return NextResponse.json(attendance);
+    const record = await Attendance.findByIdAndDelete(id);
+    if (!record) {
+      return NextResponse.json(
+        { message: "Attendance record not found" },
+        { status: 404 },
+      );
+    }
+    return NextResponse.json({ message: "Attendance record deleted" });
   } catch (error) {
     return NextResponse.json(
-      {
-        message: "Failed to update attendance",
-        error,
-      },
-      {
-        status: 500,
-      },
-    );
-  }
-}
-
-export async function DELETE(
-  request: Request,
-  {
-    params,
-  }: {
-    params: Promise<{
-      id: string;
-    }>;
-  },
-) {
-  try {
-    await connectDB();
-
-    const { id } = await params;
-
-    await Attendance.findByIdAndDelete(id);
-
-    return NextResponse.json({
-      success: true,
-    });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        message: "Failed to delete attendance",
-        error,
-      },
-      {
-        status: 500,
-      },
+      { message: "Failed to delete attendance record", error },
+      { status: 500 },
     );
   }
 }
