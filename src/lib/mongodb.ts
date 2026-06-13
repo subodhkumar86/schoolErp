@@ -1,10 +1,5 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-
-if (!MONGODB_URI) {
-  throw new Error("MONGODB_URI is missing");
-}
 
 declare global {
   var mongooseConn: {
@@ -21,6 +16,11 @@ global.mongooseConn ||= {
 export async function connectDB() {
   if (global.mongooseConn.conn) {
     return global.mongooseConn.conn;
+  }
+
+  const MONGODB_URI = process.env.MONGODB_URI;
+  if (!MONGODB_URI) {
+    throw new Error("MONGODB_URI is missing");
   }
 
   if (!global.mongooseConn.promise) {
