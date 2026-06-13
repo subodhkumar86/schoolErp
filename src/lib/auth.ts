@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 
-const JWT_SECRET = process.env.JWT_SECRET || "eduflow_secret_key_32_chars_long_minimum_value";
+const JWT_SECRET = process.env.JWT_SECRET || "development_fallback_jwt_secret_value_not_used_in_prod";
 const KEY = new TextEncoder().encode(JWT_SECRET);
 
 export async function hashPassword(password: string): Promise<string> {
