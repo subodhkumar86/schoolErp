@@ -21,7 +21,11 @@ const TeacherSchema = new Schema(
     employeeId: {
       type: String,
       required: true,
-      unique: true,
+    },
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
     },
 
     department: {
@@ -72,6 +76,8 @@ const TeacherSchema = new Schema(
     timestamps: true,
   },
 );
+
+TeacherSchema.index({ schoolId: 1, employeeId: 1 }, { unique: true });
 
 const Teacher = models.Teacher || model("Teacher", TeacherSchema);
 

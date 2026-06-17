@@ -16,9 +16,13 @@ const BookSchema = new Schema(
 
     isbn: {
       type: String,
-      unique: true,
       sparse: true,
       trim: true,
+    },
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
     },
 
     category: {
@@ -58,6 +62,8 @@ const BookSchema = new Schema(
     timestamps: true,
   },
 );
+
+BookSchema.index({ schoolId: 1, isbn: 1 }, { unique: true, sparse: true });
 
 const Book = models.Book || model("Book", BookSchema);
 

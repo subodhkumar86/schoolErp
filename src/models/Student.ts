@@ -21,7 +21,11 @@ const StudentSchema = new Schema(
     rollNumber: {
       type: String,
       required: true,
-      unique: true,
+    },
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
     },
 
     studentClass: {
@@ -81,6 +85,8 @@ const StudentSchema = new Schema(
     timestamps: true,
   },
 );
+
+StudentSchema.index({ schoolId: 1, rollNumber: 1 }, { unique: true });
 
 const Student = models.Student || model("Student", StudentSchema);
 

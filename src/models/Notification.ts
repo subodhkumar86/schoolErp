@@ -7,6 +7,11 @@ const NotificationSchema = new Schema(
       required: true,
       trim: true,
     },
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
+    },
     message: {
       type: String,
       required: true,

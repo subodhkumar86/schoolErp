@@ -8,6 +8,12 @@ const TransportSchema = new Schema(
       trim: true,
     },
 
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
+    },
+
     vehicleNumber: {
       type: String,
       required: true,

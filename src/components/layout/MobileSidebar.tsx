@@ -20,6 +20,7 @@ import {
   ClipboardList,
   Boxes,
   Clock,
+  Megaphone,
   LucideIcon,
 } from "lucide-react";
 
@@ -96,6 +97,12 @@ const menuItems: MenuItem[] = [
     href: "/reports",
     icon: FileText,
     module: "reports",
+  },
+  {
+    title: "Notices",
+    href: "/notices",
+    icon: Megaphone,
+    module: "notices",
   },
   {
     title: "Notifications",

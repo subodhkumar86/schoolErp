@@ -69,110 +69,119 @@ export default function StudentsTable() {
         setSelectedStatus={(v) => { setSelectedStatus(v); setCurrentPage(1); }}
       />
 
-      <div className="rounded-3xl border bg-card p-6 shadow-sm">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Student</TableHead>
-              <TableHead>Roll Number</TableHead>
-              <TableHead>Class</TableHead>
-              <TableHead>Attendance</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {students.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6}>
-                  <EmptyState
-                    title="No Students Found"
-                    description="Try changing your filters or add a new student."
-                  />
-                </TableCell>
+      <div className="border border-slate-200/50 bg-white/70 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-950/70 p-6 rounded-3xl shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-900">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-slate-50/50 dark:bg-slate-900/40 border-b border-slate-100 dark:border-slate-900 hover:bg-slate-50/50">
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Student</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Roll Number</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Class</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Attendance</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Status</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 text-right p-4">Actions</TableHead>
               </TableRow>
-            ) : (
-              students.map((student) => (
-                <TableRow key={student._id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-                        {student.name
-                          ?.split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .slice(0, 2)}
-                      </div>
+            </TableHeader>
 
-                      <div>
-                        <p className="font-medium">{student.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {student.email}
-                        </p>
-                      </div>
-                    </div>
-                  </TableCell>
-
-                  <TableCell>{student.rollNumber}</TableCell>
-
-                  <TableCell>
-                    {student.studentClass}
-                    {student.section ? `-${student.section}` : ""}
-                  </TableCell>
-
-                  <TableCell>{student.attendance ?? 100}%</TableCell>
-
-                  <TableCell>
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-medium ${
-                        student.status === "Active"
-                          ? "bg-green-500/20 text-green-500"
-                          : "bg-red-500/20 text-red-500"
-                      }`}
-                    >
-                      {student.status}
-                    </span>
-                  </TableCell>
-
-                  <TableCell>
-                    <div className="flex items-center justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => router.push(`/students/${student._id}`)}
-                        title="View"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() =>
-                          router.push(`/students/${student._id}/edit`)
-                        }
-                        title="Edit"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => setDeleteId(student._id)}
-                        title="Delete"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+            <TableBody>
+              {students.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-64">
+                    <EmptyState
+                      title="No Students Found"
+                      description="Try changing your filters or add a new student."
+                    />
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                students.map((student) => (
+                  <TableRow
+                    key={student._id}
+                    className="border-b border-slate-100 dark:border-slate-900 last:border-0 hover:bg-slate-50/40 dark:hover:bg-slate-900/20 transition-colors"
+                  >
+                    <TableCell className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-bold text-white shadow-sm shadow-blue-500/10">
+                          {student.name
+                            ?.split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .slice(0, 2)}
+                        </div>
+
+                        <div>
+                          <p className="font-semibold text-slate-850 dark:text-slate-200">{student.name}</p>
+                          <p className="text-xs text-slate-450 dark:text-slate-500 mt-0.5">
+                            {student.email}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">{student.rollNumber}</TableCell>
+
+                    <TableCell className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">
+                      {student.studentClass}
+                      {student.section ? `-${student.section}` : ""}
+                    </TableCell>
+
+                    <TableCell className="p-4 text-sm font-semibold text-slate-800 dark:text-slate-250">
+                      {student.attendance ?? 100}%
+                    </TableCell>
+
+                    <TableCell className="p-4">
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          student.status === "Active"
+                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
+                            : "bg-rose-100 text-rose-700 dark:bg-rose-950/30 dark:text-rose-450"
+                        }`}
+                      >
+                        {student.status}
+                      </span>
+                    </TableCell>
+
+                    <TableCell className="p-4">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => router.push(`/students/${student._id}`)}
+                          title="View"
+                          className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900"
+                        >
+                          <Eye className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() =>
+                            router.push(`/students/${student._id}/edit`)
+                          }
+                          title="Edit"
+                          className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900"
+                        >
+                          <Pencil className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-350"
+                          onClick={() => setDeleteId(student._id)}
+                          title="Delete"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
         <Pagination
           currentPage={currentPage}

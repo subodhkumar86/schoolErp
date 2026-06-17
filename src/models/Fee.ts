@@ -8,6 +8,12 @@ const FeeSchema = new Schema(
       required: true,
     },
 
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
+    },
+
     feeType: {
       type: String,
       enum: [

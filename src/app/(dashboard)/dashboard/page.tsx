@@ -1,5 +1,20 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useMe } from "@/features/auth/hooks/useMe";
+import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardStats";
+import { Loader2 } from "lucide-react";
+
+import {
+  SuperAdminDashboard,
+  TeacherDashboard,
+  StudentDashboard,
+  ParentDashboard,
+  AccountantDashboard,
+  LibrarianDashboard,
+} from "@/components/dashboard/roles/DashboardRoles";
+
 import {
   GraduationCap,
   Users,
@@ -20,8 +35,6 @@ import ActivityTimeline from "@/components/dashboard/ActivityTimeline";
 import UpcomingEvents from "@/components/dashboard/UpcomingEvents";
 import FeeCollectionCard from "@/components/dashboard/FeeCollectionCard";
 
-import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardStats";
-
 function formatCurrency(amount: number) {
   if (amount >= 100000) return `₹${(amount / 100000).toFixed(1)}L`;
   if (amount >= 1000) return `₹${(amount / 1000).toFixed(1)}K`;
@@ -29,8 +42,54 @@ function formatCurrency(amount: number) {
 }
 
 export default function DashboardPage() {
-  const { data: stats } = useDashboardStats();
+  const router = useRouter();
+  const { user, isLoading: authLoading } = useMe();
+  const { data: stats, isLoading: statsLoading } = useDashboardStats();
 
+  const role = user?.role;
+
+  useEffect(() => {
+    if (!authLoading && !statsLoading && role === "Admin" && stats) {
+      if ((stats.totalStudents ?? 0) === 0 && (stats.totalTeachers ?? 0) === 0) {
+        router.push("/setup");
+      }
+    }
+  }, [role, stats, authLoading, statsLoading, router]);
+
+  if (authLoading || statsLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center gap-2 text-muted-foreground">
+        <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+        <span>Loading your portal dashboard...</span>
+      </div>
+    );
+  }
+
+  if (role === "Super Admin") {
+    return <SuperAdminDashboard stats={stats} />;
+  }
+
+  if (role === "Teacher") {
+    return <TeacherDashboard stats={stats} />;
+  }
+
+  if (role === "Student") {
+    return <StudentDashboard stats={stats} />;
+  }
+
+  if (role === "Parent") {
+    return <ParentDashboard stats={stats} />;
+  }
+
+  if (role === "Accountant") {
+    return <AccountantDashboard stats={stats} />;
+  }
+
+  if (role === "Librarian") {
+    return <LibrarianDashboard stats={stats} />;
+  }
+
+  // Fallback to School Admin Dashboard
   return (
     <div className="space-y-6">
       {/* Hero Section */}

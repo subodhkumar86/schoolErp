@@ -3,9 +3,16 @@ import { connectDB } from "@/lib/mongodb";
 import Attendance from "@/models/Attendance";
 import Student from "@/models/Student";
 import Teacher from "@/models/Teacher";
+import { getSession } from "@/lib/session";
 
 export async function GET(request: Request) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
 
     const { searchParams } = new URL(request.url);
@@ -18,7 +25,14 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "50");
 
-    const query: Record<string, unknown> = { entityType };
+    const query: Record<string, any> = { entityType };
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    } else {
+      const filterSchoolId = searchParams.get("schoolId");
+      if (filterSchoolId) query.schoolId = filterSchoolId;
+    }
+
     if (status) query.status = status;
     if (date) {
       const d = new Date(date);
@@ -27,10 +41,12 @@ export async function GET(request: Request) {
       query.date = { $gte: d, $lt: next };
     }
 
-    let entityIds: unknown[] | null = null;
+    let entityIds: any[] | null = null;
 
     if (entityType === "Student") {
-      const studentQuery: Record<string, unknown> = {};
+      const studentQuery: Record<string, any> = {};
+      if (role !== "Super Admin") studentQuery.schoolId = schoolId;
+
       let needsStudentQuery = false;
 
       if (search) {
@@ -45,12 +61,14 @@ export async function GET(request: Request) {
         needsStudentQuery = true;
       }
 
-      if (needsStudentQuery) {
+      if (needsStudentQuery || (role !== "Super Admin" && !search && !studentClass)) {
         const students = await Student.find(studentQuery).select("_id");
         entityIds = students.map((s) => s._id);
       }
     } else if (entityType === "Teacher") {
-      const teacherQuery: Record<string, unknown> = {};
+      const teacherQuery: Record<string, any> = {};
+      if (role !== "Super Admin") teacherQuery.schoolId = schoolId;
+
       let needsTeacherQuery = false;
 
       if (search) {
@@ -65,7 +83,7 @@ export async function GET(request: Request) {
         needsTeacherQuery = true;
       }
 
-      if (needsTeacherQuery) {
+      if (needsTeacherQuery || (role !== "Super Admin" && !search && !department)) {
         const teachers = await Teacher.find(teacherQuery).select("_id");
         entityIds = teachers.map((t) => t._id);
       }
@@ -87,7 +105,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ data: attendance, total, page, limit });
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to fetch attendance", error },
+      { message: "Failed to fetch attendance", error: (error as Error).message },
       { status: 500 },
     );
   }
@@ -95,6 +113,12 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
 
     const body = await request.json();
@@ -114,8 +138,14 @@ export async function POST(request: Request) {
       );
     }
 
+    const targetSchoolId = role === "Super Admin" ? (body.schoolId || null) : schoolId;
+    if (!targetSchoolId && role !== "Super Admin") {
+      return NextResponse.json({ message: "School Tenant ID required" }, { status: 400 });
+    }
+
     // Check if duplicate index would be violated
     const existing = await Attendance.findOne({
+      schoolId: targetSchoolId,
       entityId: body.entityId,
       date: recordDate,
       entityType: body.entityType ?? "Student",
@@ -129,6 +159,7 @@ export async function POST(request: Request) {
     }
 
     const attendance = await Attendance.create({
+      schoolId: targetSchoolId,
       entityId: body.entityId,
       entityType: body.entityType ?? "Student",
       date: recordDate,

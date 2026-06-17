@@ -80,109 +80,118 @@ export default function TeachersTable() {
         setSelectedStatus={(v) => { setSelectedStatus(v); setCurrentPage(1); }}
       />
 
-      <div className="rounded-3xl border bg-card p-6 shadow-sm">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Teacher</TableHead>
-              <TableHead>Employee ID</TableHead>
-              <TableHead>Department</TableHead>
-              <TableHead>Experience</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {teachers.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6}>
-                  <EmptyState
-                    title="No Teachers Found"
-                    description="Try changing your filters or add a new teacher."
-                  />
-                </TableCell>
+      <div className="border border-slate-200/50 bg-white/70 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-950/70 p-6 rounded-3xl shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-900">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-slate-50/50 dark:bg-slate-900/40 border-b border-slate-100 dark:border-slate-900 hover:bg-slate-50/50">
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Teacher</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Employee ID</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Department</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Experience</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Status</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 text-right p-4">Actions</TableHead>
               </TableRow>
-            ) : (
-              teachers.map((teacher) => (
-                <TableRow key={teacher._id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-                        {teacher.name
-                          ?.split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .slice(0, 2)}
-                      </div>
+            </TableHeader>
 
-                      <div>
-                        <p className="font-medium">{teacher.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {teacher.email}
-                        </p>
-                      </div>
-                    </div>
-                  </TableCell>
-
-                  <TableCell>{teacher.employeeId}</TableCell>
-
-                  <TableCell>{teacher.department}</TableCell>
-
-                  <TableCell>{teacher.experience ?? 0} yrs</TableCell>
-
-                  <TableCell>
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-medium ${
-                        teacher.status === "Active"
-                          ? "bg-green-500/20 text-green-500"
-                          : teacher.status === "On Leave"
-                            ? "bg-yellow-500/20 text-yellow-500"
-                            : "bg-red-500/20 text-red-500"
-                      }`}
-                    >
-                      {teacher.status}
-                    </span>
-                  </TableCell>
-
-                  <TableCell>
-                    <div className="flex items-center justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => router.push(`/teachers/${teacher._id}`)}
-                        title="View"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() =>
-                          router.push(`/teachers/${teacher._id}/edit`)
-                        }
-                        title="Edit"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => setDeleteId(teacher._id)}
-                        title="Delete"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+            <TableBody>
+              {teachers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-64">
+                    <EmptyState
+                      title="No Teachers Found"
+                      description="Try changing your filters or add a new teacher."
+                    />
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                teachers.map((teacher) => (
+                  <TableRow
+                    key={teacher._id}
+                    className="border-b border-slate-100 dark:border-slate-900 last:border-0 hover:bg-slate-50/40 dark:hover:bg-slate-900/20 transition-colors"
+                  >
+                    <TableCell className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-sm font-bold text-white shadow-sm shadow-indigo-500/10">
+                          {teacher.name
+                            ?.split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .slice(0, 2)}
+                        </div>
+
+                        <div>
+                          <p className="font-semibold text-slate-850 dark:text-slate-200">{teacher.name}</p>
+                          <p className="text-xs text-slate-450 dark:text-slate-500 mt-0.5">
+                            {teacher.email}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">{teacher.employeeId}</TableCell>
+
+                    <TableCell className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">{teacher.department}</TableCell>
+
+                    <TableCell className="p-4 text-sm font-semibold text-slate-800 dark:text-slate-250">
+                      {teacher.experience ?? 0} yrs
+                    </TableCell>
+
+                    <TableCell className="p-4">
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          teacher.status === "Active"
+                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
+                            : teacher.status === "On Leave"
+                              ? "bg-amber-100 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400"
+                              : "bg-rose-100 text-rose-700 dark:bg-rose-950/30 dark:text-rose-450"
+                        }`}
+                      >
+                        {teacher.status}
+                      </span>
+                    </TableCell>
+
+                    <TableCell className="p-4">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => router.push(`/teachers/${teacher._id}`)}
+                          title="View"
+                          className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900"
+                        >
+                          <Eye className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() =>
+                            router.push(`/teachers/${teacher._id}/edit`)
+                          }
+                          title="Edit"
+                          className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900"
+                        >
+                          <Pencil className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-350"
+                          onClick={() => setDeleteId(teacher._id)}
+                          title="Delete"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
         <Pagination
           currentPage={currentPage}
@@ -193,21 +202,26 @@ export default function TeachersTable() {
       </div>
 
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent>
+        <DialogContent className="rounded-3xl border border-slate-200/50 bg-white/95 dark:border-slate-800/50 dark:bg-slate-950/95 backdrop-blur-md">
           <DialogHeader>
-            <DialogTitle>Delete Teacher</DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. Are you sure?
+            <DialogTitle className="text-xl font-bold text-slate-900 dark:text-slate-50">Delete Teacher</DialogTitle>
+            <DialogDescription className="text-sm text-slate-500 dark:text-slate-400">
+              This action cannot be undone. Are you sure you want to delete this teacher?
             </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
+          <div className="flex justify-end gap-3 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteId(null)}
+              className="rounded-2xl"
+            >
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={deleteTeacher.isPending}
+              className="rounded-2xl"
             >
               {deleteTeacher.isPending ? "Deleting..." : "Delete"}
             </Button>

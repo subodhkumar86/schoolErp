@@ -1,4 +1,4 @@
-export type UserRole = "Super Admin" | "Admin" | "Teacher" | "Student" | "Accountant" | "Librarian";
+export type UserRole = "Super Admin" | "Admin" | "Teacher" | "Student" | "Parent" | "Accountant" | "Librarian";
 
 export type AppModule =
   | "dashboard"
@@ -75,6 +75,15 @@ export const ROLE_PERMISSIONS: Record<UserRole, AppModule[]> = {
     "results",
     "homework",
     "library",
+    "notices",
+    "notifications",
+  ],
+  Parent: [
+    "dashboard",
+    "attendance",
+    "exams",
+    "results",
+    "fees",
     "notices",
     "notifications",
   ],

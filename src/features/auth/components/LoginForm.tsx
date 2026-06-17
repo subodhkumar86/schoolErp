@@ -143,6 +143,13 @@ export default function LoginForm() {
         </Button>
       </form>
 
+      <div className="text-center text-xs text-muted-foreground">
+        New school or organization?{" "}
+        <Link href="/register" className="font-semibold text-primary hover:underline">
+          Start 14-Day Free Trial
+        </Link>
+      </div>
+
       <div className="border-t pt-4 text-center text-xs text-muted-foreground">
         <p className="font-semibold text-foreground mb-1">Standard Demo Accounts:</p>
         <p className="leading-relaxed">

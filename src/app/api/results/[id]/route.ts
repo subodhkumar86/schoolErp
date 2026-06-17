@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Result from "@/models/Result";
 import Exam from "@/models/Exam";
+import { getSession } from "@/lib/session";
 
 interface Params {
   params: Promise<{ id: string }>;
@@ -9,10 +10,21 @@ interface Params {
 
 export async function GET(_request: Request, { params }: Params) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
     const { id } = await params;
 
-    const result = await Result.findById(id)
+    const query: Record<string, any> = { _id: id };
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    }
+
+    const result = await Result.findOne(query)
       .populate("studentId", "name rollNumber studentClass section")
       .populate("examId", "name subject totalMarks passingMarks date");
 
@@ -26,7 +38,7 @@ export async function GET(_request: Request, { params }: Params) {
     return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to fetch result record", error },
+      { message: "Failed to fetch result record", error: (error as Error).message },
       { status: 500 },
     );
   }
@@ -34,20 +46,32 @@ export async function GET(_request: Request, { params }: Params) {
 
 export async function PUT(request: Request, { params }: Params) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
     const { id } = await params;
     const body = await request.json();
 
-    const result = await Result.findById(id);
+    const query: Record<string, any> = { _id: id };
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    }
+
+    const result = await Result.findOne(query);
     if (!result) {
       return NextResponse.json(
-        { message: "Result record not found." },
+        { message: "Result record not found or access denied" },
         { status: 404 },
       );
     }
 
     if (body.marksObtained !== undefined) {
-      const exam = await Exam.findById(result.examId);
+      // Validate exam exists and check max marks
+      const exam = await Exam.findOne({ _id: result.examId, schoolId: result.schoolId });
       if (exam && body.marksObtained > exam.totalMarks) {
         return NextResponse.json(
           { message: `Marks obtained cannot exceed total exam marks (${exam.totalMarks}).` },
@@ -69,7 +93,7 @@ export async function PUT(request: Request, { params }: Params) {
     return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to update result record", error },
+      { message: "Failed to update result record", error: (error as Error).message },
       { status: 500 },
     );
   }
@@ -77,13 +101,24 @@ export async function PUT(request: Request, { params }: Params) {
 
 export async function DELETE(_request: Request, { params }: Params) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
     const { id } = await params;
 
-    const result = await Result.findByIdAndDelete(id);
+    const query: Record<string, any> = { _id: id };
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    }
+
+    const result = await Result.findOneAndDelete(query);
     if (!result) {
       return NextResponse.json(
-        { message: "Result record not found." },
+        { message: "Result record not found or access denied" },
         { status: 404 },
       );
     }
@@ -91,7 +126,7 @@ export async function DELETE(_request: Request, { params }: Params) {
     return NextResponse.json({ message: "Result record deleted successfully." });
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to delete result record", error },
+      { message: "Failed to delete result record", error: (error as Error).message },
       { status: 500 },
     );
   }

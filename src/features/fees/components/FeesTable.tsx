@@ -72,7 +72,7 @@ export default function FeesTable() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-fade-in">
       <FeeFilters
         search={search}
         setSearch={(v) => {
@@ -91,26 +91,26 @@ export default function FeesTable() {
         }}
       />
 
-      <div className="rounded-3xl border bg-card p-6 shadow-sm">
-        <div className="overflow-x-auto">
+      <div className="border border-slate-200/50 bg-white/70 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-950/70 p-6 rounded-3xl shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-900">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Student Name</TableHead>
-                <TableHead>Class</TableHead>
-                <TableHead>Fee Type</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Due Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Payment Method</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+              <TableRow className="bg-slate-50/50 dark:bg-slate-900/40 border-b border-slate-100 dark:border-slate-900 hover:bg-slate-50/50">
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Student Name</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Class</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Fee Type</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Amount</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Due Date</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Status</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Payment Method</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 text-right p-4">Actions</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
               {fees.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8}>
+                  <TableCell colSpan={8} className="h-64">
                     <EmptyState
                       title="No Fee Records Found"
                       description="Create a fee record to manage students' billing."
@@ -123,48 +123,54 @@ export default function FeesTable() {
                     typeof f.studentId === "object" ? f.studentId : null;
 
                   return (
-                    <TableRow key={f._id}>
-                      <TableCell className="font-semibold">
-                        {student?.name ?? "—"}
+                    <TableRow
+                      key={f._id}
+                      className="border-b border-slate-100 dark:border-slate-900 last:border-0 hover:bg-slate-50/40 dark:hover:bg-slate-900/20 transition-colors"
+                    >
+                      <TableCell className="p-4">
+                        <div className="font-semibold text-slate-850 dark:text-slate-200">
+                          {student?.name ?? "—"}
+                        </div>
                         {student?.rollNumber ? (
-                          <div className="text-xs text-muted-foreground font-normal">
+                          <div className="text-xs text-slate-450 dark:text-slate-500 font-medium mt-0.5">
                             Roll: {student.rollNumber}
                           </div>
                         ) : null}
                       </TableCell>
-                      <TableCell>{student?.studentClass ?? "—"}</TableCell>
-                      <TableCell>{f.feeType}</TableCell>
-                      <TableCell className="font-semibold">
+                      <TableCell className="p-4 text-sm font-medium text-slate-600 dark:text-slate-350">{student?.studentClass ?? "—"}</TableCell>
+                      <TableCell className="p-4 text-sm font-medium text-slate-650 dark:text-slate-300">{f.feeType}</TableCell>
+                      <TableCell className="p-4 text-sm font-bold text-slate-900 dark:text-slate-100">
                         ₹{f.amount.toLocaleString()}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="p-4 text-sm text-slate-550 dark:text-slate-400">
                         {new Date(f.dueDate).toLocaleDateString()}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="p-4">
                         <span
-                          className={`rounded-full px-3 py-1 text-xs font-medium ${
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                             f.status === "Paid"
-                              ? "bg-green-500/20 text-green-600"
+                              ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
                               : f.status === "Pending"
-                                ? "bg-yellow-500/20 text-yellow-600"
+                                ? "bg-amber-100 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400"
                                 : f.status === "Partial"
-                                  ? "bg-blue-500/20 text-blue-600"
-                                  : "bg-red-500/20 text-red-600"
+                                  ? "bg-blue-100 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400"
+                                  : "bg-rose-100 text-rose-700 dark:bg-rose-950/30 dark:text-rose-455"
                           }`}
                         >
                           {f.status}
                         </span>
                       </TableCell>
-                      <TableCell>{f.paymentMethod ?? "—"}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-end gap-2">
+                      <TableCell className="p-4 text-sm font-medium text-slate-600 dark:text-slate-350">{f.paymentMethod ?? "—"}</TableCell>
+                      <TableCell className="p-4 text-right">
+                        <div className="flex justify-end gap-1">
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => router.push(`/fees/${f._id}`)}
                             title="View Details"
+                            className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900"
                           >
-                            <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                            <Eye className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                           </Button>
 
                           <Button
@@ -172,14 +178,15 @@ export default function FeesTable() {
                             size="icon"
                             onClick={() => router.push(`/fees/${f._id}/edit`)}
                             title="Edit"
+                            className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900"
                           >
-                            <Pencil className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                            <Pencil className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                           </Button>
 
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-destructive hover:text-destructive-foreground hover:bg-destructive/10"
+                            className="h-8 w-8 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-350"
                             onClick={() => setDeleteId(f._id)}
                             title="Delete"
                           >
@@ -210,22 +217,23 @@ export default function FeesTable() {
       </div>
 
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent>
+        <DialogContent className="rounded-3xl border border-slate-200/50 bg-white/95 dark:border-slate-800/50 dark:bg-slate-950/95 backdrop-blur-md">
           <DialogHeader>
-            <DialogTitle>Delete Fee Record</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg font-bold text-slate-900 dark:text-slate-50">Delete Fee Record</DialogTitle>
+            <DialogDescription className="text-sm text-slate-500 dark:text-slate-400">
               Are you sure you want to delete this fee/payment record? This action
               cannot be undone.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
+          <div className="flex justify-end gap-3 mt-4">
+            <Button variant="outline" onClick={() => setDeleteId(null)} className="rounded-2xl">
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={deleteFeeMutation.isPending}
+              className="rounded-2xl"
             >
               {deleteFeeMutation.isPending ? "Deleting..." : "Delete"}
             </Button>

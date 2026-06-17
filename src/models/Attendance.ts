@@ -15,6 +15,12 @@ const AttendanceSchema = new Schema(
       default: "Student",
     },
 
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
+    },
+
     date: {
       type: Date,
       required: true,

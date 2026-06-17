@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Class from "@/models/Class";
+import { getSession } from "@/lib/session";
 
 export async function GET(request: Request) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
 
     const { searchParams } = new URL(request.url);
@@ -12,7 +19,15 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get("limit") || "10");
     const status = searchParams.get("status") || "";
 
-    const query: Record<string, unknown> = {};
+    const query: Record<string, any> = {};
+
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    } else {
+      const filterSchoolId = searchParams.get("schoolId");
+      if (filterSchoolId) query.schoolId = filterSchoolId;
+    }
+
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
@@ -33,7 +48,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ data: classes, total, page, limit });
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to fetch classes", error },
+      { message: "Failed to fetch classes", error: (error as Error).message },
       { status: 500 },
     );
   }
@@ -41,11 +56,22 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    await connectDB();
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
 
+    await connectDB();
     const body = await request.json();
 
+    const targetSchoolId = role === "Super Admin" ? (body.schoolId || null) : schoolId;
+    if (!targetSchoolId && role !== "Super Admin") {
+      return NextResponse.json({ message: "School Tenant ID required" }, { status: 400 });
+    }
+
     const cls = await Class.create({
+      schoolId: targetSchoolId,
       name: body.name,
       section: body.section,
       classTeacher: body.classTeacher || undefined,
@@ -57,7 +83,7 @@ export async function POST(request: Request) {
     return NextResponse.json(cls, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to create class", error },
+      { message: "Failed to create class", error: (error as Error).message },
       { status: 500 },
     );
   }

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Fee from "@/models/Fee";
+import Student from "@/models/Student";
+import { getSession } from "@/lib/session";
 
 interface Params {
   params: Promise<{ id: string }>;
@@ -8,16 +10,28 @@ interface Params {
 
 export async function GET(_request: Request, { params }: Params) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
     const { id } = await params;
-    const fee = await Fee.findById(id).populate("studentId", "name rollNumber studentClass");
+
+    const query: Record<string, any> = { _id: id };
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    }
+
+    const fee = await Fee.findOne(query).populate("studentId", "name rollNumber studentClass");
     if (!fee) {
       return NextResponse.json({ message: "Fee record not found" }, { status: 404 });
     }
     return NextResponse.json(fee);
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to fetch fee record", error },
+      { message: "Failed to fetch fee record", error: (error as Error).message },
       { status: 500 },
     );
   }
@@ -25,12 +39,32 @@ export async function GET(_request: Request, { params }: Params) {
 
 export async function PUT(request: Request, { params }: Params) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
     const { id } = await params;
     const body = await request.json();
 
-    const fee = await Fee.findByIdAndUpdate(
-      id,
+    const query: Record<string, any> = { _id: id };
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    }
+
+    // Verify student exists in this school if updating studentId
+    const targetSchoolId = role === "Super Admin" ? (body.schoolId || null) : schoolId;
+    if (body.studentId) {
+      const student = await Student.findOne({ _id: body.studentId, schoolId: targetSchoolId });
+      if (!student) {
+        return NextResponse.json({ message: "Selected Student does not exist in your school" }, { status: 400 });
+      }
+    }
+
+    const fee = await Fee.findOneAndUpdate(
+      query,
       {
         studentId: body.studentId,
         feeType: body.feeType,
@@ -46,13 +80,13 @@ export async function PUT(request: Request, { params }: Params) {
     );
 
     if (!fee) {
-      return NextResponse.json({ message: "Fee record not found" }, { status: 404 });
+      return NextResponse.json({ message: "Fee record not found or access denied" }, { status: 404 });
     }
 
     return NextResponse.json(fee);
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to update fee record", error },
+      { message: "Failed to update fee record", error: (error as Error).message },
       { status: 500 },
     );
   }
@@ -60,16 +94,28 @@ export async function PUT(request: Request, { params }: Params) {
 
 export async function DELETE(_request: Request, { params }: Params) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
     const { id } = await params;
-    const fee = await Fee.findByIdAndDelete(id);
+
+    const query: Record<string, any> = { _id: id };
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    }
+
+    const fee = await Fee.findOneAndDelete(query);
     if (!fee) {
-      return NextResponse.json({ message: "Fee record not found" }, { status: 404 });
+      return NextResponse.json({ message: "Fee record not found or access denied" }, { status: 404 });
     }
     return NextResponse.json({ message: "Fee record deleted successfully" });
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to delete fee record", error },
+      { message: "Failed to delete fee record", error: (error as Error).message },
       { status: 500 },
     );
   }

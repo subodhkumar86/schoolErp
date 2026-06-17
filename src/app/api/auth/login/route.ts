@@ -53,6 +53,7 @@ export async function POST(request: Request) {
       username: user.username,
       email: user.email,
       role: user.role,
+      schoolId: user.schoolId ? user.schoolId.toString() : null,
     };
 
     const token = await signJWT(payload, rememberMe);

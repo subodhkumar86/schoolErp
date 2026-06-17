@@ -3,9 +3,16 @@ import { connectDB } from "@/lib/mongodb";
 import Result from "@/models/Result";
 import Student from "@/models/Student";
 import Exam from "@/models/Exam";
+import { getSession } from "@/lib/session";
 
 export async function GET(request: Request) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
 
     const { searchParams } = new URL(request.url);
@@ -15,9 +22,10 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
 
-    let studentIds: unknown[] | null = null;
+    let studentIds: any[] | null = null;
     let needsStudentQuery = false;
-    const studentQuery: Record<string, unknown> = {};
+    const studentQuery: Record<string, any> = {};
+    if (role !== "Super Admin") studentQuery.schoolId = schoolId;
 
     if (search) {
       studentQuery.name = { $regex: search, $options: "i" };
@@ -28,12 +36,19 @@ export async function GET(request: Request) {
       needsStudentQuery = true;
     }
 
-    if (needsStudentQuery) {
+    if (needsStudentQuery || (role !== "Super Admin" && !search && !className)) {
       const students = await Student.find(studentQuery).select("_id");
       studentIds = students.map((s) => s._id);
     }
 
-    const query: Record<string, unknown> = {};
+    const query: Record<string, any> = {};
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    } else {
+      const filterSchoolId = searchParams.get("schoolId");
+      if (filterSchoolId) query.schoolId = filterSchoolId;
+    }
+
     if (studentIds !== null) {
       query.studentId = { $in: studentIds };
     }
@@ -54,7 +69,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ data: results, total, page, limit });
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to fetch results", error },
+      { message: "Failed to fetch results", error: (error as Error).message },
       { status: 500 },
     );
   }
@@ -62,6 +77,12 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
     const body = await request.json();
 
@@ -72,13 +93,21 @@ export async function POST(request: Request) {
       );
     }
 
+    const targetSchoolId = role === "Super Admin" ? (body.schoolId || null) : schoolId;
+    if (!targetSchoolId && role !== "Super Admin") {
+      return NextResponse.json({ message: "School Tenant ID required" }, { status: 400 });
+    }
+
+    // Validate student exists in this school
+    const student = await Student.findOne({ _id: body.studentId, schoolId: targetSchoolId });
+    if (!student) {
+      return NextResponse.json({ message: "Student not found in your school" }, { status: 404 });
+    }
+
     // Validate exam exists and check max marks
-    const exam = await Exam.findById(body.examId);
+    const exam = await Exam.findOne({ _id: body.examId, schoolId: targetSchoolId });
     if (!exam) {
-      return NextResponse.json(
-        { message: "Exam not found." },
-        { status: 404 },
-      );
+      return NextResponse.json({ message: "Exam not found in your school" }, { status: 404 });
     }
 
     if (body.marksObtained > exam.totalMarks) {
@@ -90,6 +119,7 @@ export async function POST(request: Request) {
 
     // Check duplicate
     const existing = await Result.findOne({
+      schoolId: targetSchoolId,
       studentId: body.studentId,
       examId: body.examId,
     });
@@ -115,6 +145,7 @@ export async function POST(request: Request) {
     }
 
     const result = await Result.create({
+      schoolId: targetSchoolId,
       studentId: body.studentId,
       examId: body.examId,
       marksObtained: body.marksObtained,

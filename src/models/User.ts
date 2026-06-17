@@ -23,8 +23,13 @@ const UserSchema = new Schema(
     role: {
       type: String,
       required: true,
-      enum: ["Super Admin", "Admin", "Teacher", "Student", "Accountant", "Librarian"],
+      enum: ["Super Admin", "Admin", "Teacher", "Student", "Parent", "Accountant", "Librarian"],
       default: "Student",
+    },
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      default: null,
     },
     entityId: {
       type: Schema.Types.ObjectId,
@@ -32,7 +37,7 @@ const UserSchema = new Schema(
     },
     entityModel: {
       type: String,
-      enum: ["Student", "Teacher", "Admin"],
+      enum: ["Student", "Teacher", "Admin", "Parent"],
     },
     status: {
       type: String,

@@ -72,7 +72,7 @@ export default function ClassesTable() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-fade-in">
       <ClassFilters
         search={search}
         setSearch={(v) => {
@@ -86,25 +86,25 @@ export default function ClassesTable() {
         }}
       />
 
-      <div className="rounded-3xl border bg-card p-6 shadow-sm">
-        <div className="overflow-x-auto">
+      <div className="border border-slate-200/50 bg-white/70 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-950/70 p-6 rounded-3xl shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-900">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Class Name</TableHead>
-                <TableHead>Section</TableHead>
-                <TableHead>Class Teacher</TableHead>
-                <TableHead>Capacity</TableHead>
-                <TableHead>Subjects</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+              <TableRow className="bg-slate-50/50 dark:bg-slate-900/40 border-b border-slate-100 dark:border-slate-900 hover:bg-slate-50/50">
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Class Name</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Section</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Class Teacher</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Capacity</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Subjects</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 p-4">Status</TableHead>
+                <TableHead className="font-semibold text-slate-800 dark:text-slate-350 text-right p-4">Actions</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
               {classes.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7}>
+                  <TableCell colSpan={7} className="h-64">
                     <EmptyState
                       title="No Classes Found"
                       description="Try changing your filters or add a new class."
@@ -119,56 +119,60 @@ export default function ClassesTable() {
                       : null;
 
                   return (
-                    <TableRow key={cls._id}>
-                      <TableCell className="font-semibold">
+                    <TableRow
+                      key={cls._id}
+                      className="border-b border-slate-100 dark:border-slate-900 last:border-0 hover:bg-slate-50/40 dark:hover:bg-slate-900/20 transition-colors"
+                    >
+                      <TableCell className="p-4 font-semibold text-slate-850 dark:text-slate-200">
                         {cls.name}
                       </TableCell>
-                      <TableCell>{cls.section}</TableCell>
-                      <TableCell>{teacher?.name ?? "—"}</TableCell>
-                      <TableCell>{cls.capacity} students</TableCell>
-                      <TableCell>
+                      <TableCell className="p-4 text-sm font-semibold text-slate-700 dark:text-slate-300">{cls.section}</TableCell>
+                      <TableCell className="p-4 text-sm font-medium text-slate-650 dark:text-slate-350">{teacher?.name ?? "—"}</TableCell>
+                      <TableCell className="p-4 text-sm text-slate-600 dark:text-slate-400">{cls.capacity} students</TableCell>
+                      <TableCell className="p-4">
                         <div className="flex flex-wrap gap-1">
                           {cls.subjects.length === 0 ? (
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-slate-450 dark:text-slate-500">
                               No subjects
                             </span>
                           ) : (
                             cls.subjects.slice(0, 3).map((sub, idx) => (
                               <span
                                 key={idx}
-                                className="rounded bg-secondary px-2 py-0.5 text-xs text-secondary-foreground"
+                                className="rounded-lg bg-slate-105 border border-slate-200/40 px-2 py-0.5 text-xs text-slate-700 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300"
                               >
                                 {sub}
                               </span>
                             ))
                           )}
                           {cls.subjects.length > 3 && (
-                            <span className="text-xs text-muted-foreground px-1 self-center">
+                            <span className="text-xs text-slate-400 dark:text-slate-500 px-1 self-center">
                               +{cls.subjects.length - 3} more
                             </span>
                           )}
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="p-4">
                         <span
-                          className={`rounded-full px-3 py-1 text-xs font-medium ${
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                             cls.status === "Active"
-                              ? "bg-green-500/20 text-green-600"
-                              : "bg-red-500/20 text-red-600"
+                              ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
+                              : "bg-rose-100 text-rose-700 dark:bg-rose-950/30 dark:text-rose-455"
                           }`}
                         >
                           {cls.status}
                         </span>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-end gap-2">
+                      <TableCell className="p-4">
+                        <div className="flex items-center justify-end gap-1">
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => router.push(`/classes/${cls._id}`)}
                             title="View"
+                            className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900"
                           >
-                            <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                            <Eye className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                           </Button>
 
                           <Button
@@ -178,14 +182,15 @@ export default function ClassesTable() {
                               router.push(`/classes/${cls._id}/edit`)
                             }
                             title="Edit"
+                            className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900"
                           >
-                            <Pencil className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                            <Pencil className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                           </Button>
 
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-destructive hover:text-destructive-foreground hover:bg-destructive/10"
+                            className="h-8 w-8 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 text-rose-500 hover:text-rose-600 dark:text-rose-450 dark:hover:text-rose-350"
                             onClick={() => setDeleteId(cls._id)}
                             title="Delete"
                           >
@@ -216,22 +221,23 @@ export default function ClassesTable() {
       </div>
 
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent>
+        <DialogContent className="rounded-3xl border border-slate-200/50 bg-white/95 dark:border-slate-800/50 dark:bg-slate-950/95 backdrop-blur-md">
           <DialogHeader>
-            <DialogTitle>Delete Class</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg font-bold text-slate-900 dark:text-slate-50">Delete Class</DialogTitle>
+            <DialogDescription className="text-sm text-slate-500 dark:text-slate-400">
               Are you sure you want to delete this class? This action cannot be
               undone.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
+          <div className="flex justify-end gap-3 mt-4">
+            <Button variant="outline" onClick={() => setDeleteId(null)} className="rounded-2xl">
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={deleteClassMutation.isPending}
+              className="rounded-2xl"
             >
               {deleteClassMutation.isPending ? "Deleting..." : "Delete"}
             </Button>

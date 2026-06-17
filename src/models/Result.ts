@@ -8,6 +8,12 @@ const ResultSchema = new Schema(
       required: true,
     },
 
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
+    },
+
     examId: {
       type: Schema.Types.ObjectId,
       ref: "Exam",

@@ -24,6 +24,10 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
     "dashboard", "attendance", "exams", "results", "homework",
     "library", "notices", "notifications"
   ],
+  Parent: [
+    "dashboard", "attendance", "exams", "results", "fees",
+    "notices", "notifications"
+  ],
   Accountant: [
     "dashboard", "fees", "inventory", "notices", "notifications", "reports"
   ],
@@ -52,7 +56,7 @@ const MODULE_ROUTES: Record<string, string> = {
   "settings": "settings",
 };
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isAuthPage = pathname === "/login" || pathname === "/forgot-password";
@@ -76,8 +80,20 @@ export async function middleware(request: NextRequest) {
 
   // If not authenticated and visiting protected pages, redirect to login
   if (!isAuthPage && !user) {
+    if (pathname === "/students") {
+      return NextResponse.redirect(new URL("/for-students", request.url));
+    }
+    if (pathname === "/teachers") {
+      return NextResponse.redirect(new URL("/for-teachers", request.url));
+    }
+
     // Exclude static assets, public paths, and API routes (APIs handle their own checks)
-    const isPublicPath = pathname === "/" || pathname === "/pricing";
+    const publicPaths = [
+      "/", "/pricing", "/features", "/about", "/contact", "/demo", "/faq", 
+      "/privacy-policy", "/terms", "/blog", "/schools", "/parents", 
+      "/for-students", "/for-teachers", "/privacy"
+    ];
+    const isPublicPath = publicPaths.includes(pathname) || pathname.startsWith("/blog/");
     const isStatic = pathname.includes(".") || pathname.startsWith("/_next") || pathname.startsWith("/api");
     
     if (!isPublicPath && !isStatic) {

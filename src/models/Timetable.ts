@@ -7,6 +7,11 @@ const TimetableSchema = new Schema(
       ref: "Class",
       required: true,
     },
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
+    },
     subject: {
       type: String,
       required: true,

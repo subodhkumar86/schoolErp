@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Inventory from "@/models/Inventory";
+import { getSession } from "@/lib/session";
 
 interface Params {
   params: Promise<{ id: string }>;
@@ -8,16 +9,28 @@ interface Params {
 
 export async function GET(_request: Request, { params }: Params) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
     const { id } = await params;
-    const item = await Inventory.findById(id);
+
+    const query: Record<string, any> = { _id: id };
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    }
+
+    const item = await Inventory.findOne(query);
     if (!item) {
       return NextResponse.json({ message: "Inventory asset not found" }, { status: 404 });
     }
     return NextResponse.json(item);
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to fetch asset details", error },
+      { message: "Failed to fetch asset details", error: (error as Error).message },
       { status: 500 },
     );
   }
@@ -25,12 +38,23 @@ export async function GET(_request: Request, { params }: Params) {
 
 export async function PUT(request: Request, { params }: Params) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
     const { id } = await params;
     const body = await request.json();
 
-    const item = await Inventory.findByIdAndUpdate(
-      id,
+    const query: Record<string, any> = { _id: id };
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    }
+
+    const item = await Inventory.findOneAndUpdate(
+      query,
       {
         name: body.name,
         category: body.category,
@@ -44,13 +68,13 @@ export async function PUT(request: Request, { params }: Params) {
     );
 
     if (!item) {
-      return NextResponse.json({ message: "Inventory asset not found" }, { status: 404 });
+      return NextResponse.json({ message: "Inventory asset not found or access denied" }, { status: 404 });
     }
 
     return NextResponse.json(item);
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to update asset details", error },
+      { message: "Failed to update asset details", error: (error as Error).message },
       { status: 500 },
     );
   }
@@ -58,16 +82,28 @@ export async function PUT(request: Request, { params }: Params) {
 
 export async function DELETE(_request: Request, { params }: Params) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
     const { id } = await params;
-    const item = await Inventory.findByIdAndDelete(id);
+
+    const query: Record<string, any> = { _id: id };
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    }
+
+    const item = await Inventory.findOneAndDelete(query);
     if (!item) {
-      return NextResponse.json({ message: "Inventory asset not found" }, { status: 404 });
+      return NextResponse.json({ message: "Inventory asset not found or access denied" }, { status: 404 });
     }
     return NextResponse.json({ message: "Inventory asset deleted successfully" });
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to delete asset record", error },
+      { message: "Failed to delete asset record", error: (error as Error).message },
       { status: 500 },
     );
   }

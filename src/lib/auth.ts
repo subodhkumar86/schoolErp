@@ -17,6 +17,7 @@ export interface JWTPayload {
   username: string;
   email: string;
   role: string;
+  schoolId?: string;
 }
 
 export async function signJWT(payload: JWTPayload, rememberMe = false): Promise<string> {

@@ -8,6 +8,12 @@ const HomeworkSchema = new Schema(
       trim: true,
     },
 
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
+    },
+
     description: {
       type: String,
       required: true,

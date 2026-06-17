@@ -8,6 +8,11 @@ const SettingSchema = new Schema(
       default: "EduFlow Public School",
       trim: true,
     },
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
+    },
     schoolAddress: {
       type: String,
       required: true,

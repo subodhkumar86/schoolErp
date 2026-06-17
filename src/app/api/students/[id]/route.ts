@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Student from "@/models/Student";
+import { getSession } from "@/lib/session";
 
 interface Params {
   params: Promise<{ id: string }>;
@@ -8,16 +9,28 @@ interface Params {
 
 export async function GET(_request: Request, { params }: Params) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
     const { id } = await params;
-    const student = await Student.findById(id);
+
+    const query: Record<string, any> = { _id: id };
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    }
+
+    const student = await Student.findOne(query);
     if (!student) {
       return NextResponse.json({ message: "Student not found" }, { status: 404 });
     }
     return NextResponse.json(student);
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to fetch student", error },
+      { message: "Failed to fetch student", error: (error as Error).message },
       { status: 500 },
     );
   }
@@ -25,12 +38,23 @@ export async function GET(_request: Request, { params }: Params) {
 
 export async function PUT(request: Request, { params }: Params) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
     const { id } = await params;
     const body = await request.json();
 
-    const student = await Student.findByIdAndUpdate(
-      id,
+    const query: Record<string, any> = { _id: id };
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    }
+
+    const student = await Student.findOneAndUpdate(
+      query,
       {
         name: body.name,
         email: body.email,
@@ -50,13 +74,13 @@ export async function PUT(request: Request, { params }: Params) {
     );
 
     if (!student) {
-      return NextResponse.json({ message: "Student not found" }, { status: 404 });
+      return NextResponse.json({ message: "Student not found or access denied" }, { status: 404 });
     }
 
     return NextResponse.json(student);
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to update student", error },
+      { message: "Failed to update student", error: (error as Error).message },
       { status: 500 },
     );
   }
@@ -64,16 +88,28 @@ export async function PUT(request: Request, { params }: Params) {
 
 export async function DELETE(_request: Request, { params }: Params) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
     const { id } = await params;
-    const student = await Student.findByIdAndDelete(id);
+
+    const query: Record<string, any> = { _id: id };
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    }
+
+    const student = await Student.findOneAndDelete(query);
     if (!student) {
-      return NextResponse.json({ message: "Student not found" }, { status: 404 });
+      return NextResponse.json({ message: "Student not found or access denied" }, { status: 404 });
     }
     return NextResponse.json({ message: "Student deleted successfully" });
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to delete student", error },
+      { message: "Failed to delete student", error: (error as Error).message },
       { status: 500 },
     );
   }

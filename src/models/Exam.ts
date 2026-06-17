@@ -8,6 +8,12 @@ const ExamSchema = new Schema(
       trim: true,
     },
 
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
+    },
+
     subject: {
       type: String,
       required: true,

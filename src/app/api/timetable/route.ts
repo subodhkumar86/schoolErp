@@ -3,9 +3,16 @@ import { connectDB } from "@/lib/mongodb";
 import Timetable from "@/models/Timetable";
 import Class from "@/models/Class";
 import Teacher from "@/models/Teacher";
+import { getSession } from "@/lib/session";
 
 export async function GET(request: Request) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
 
     const { searchParams } = new URL(request.url);
@@ -16,25 +23,27 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
 
-    const query: Record<string, unknown> = {};
+    const query: Record<string, any> = {};
 
-    if (classId) {
-      query.classId = classId;
+    if (role !== "Super Admin") {
+      query.schoolId = schoolId;
+    } else {
+      const filterSchoolId = searchParams.get("schoolId");
+      if (filterSchoolId) query.schoolId = filterSchoolId;
     }
 
-    if (teacherId) {
-      query.teacherId = teacherId;
-    }
-
-    if (dayOfWeek) {
-      query.dayOfWeek = dayOfWeek;
-    }
+    if (classId) query.classId = classId;
+    if (teacherId) query.teacherId = teacherId;
+    if (dayOfWeek) query.dayOfWeek = dayOfWeek;
 
     // If text search, find matching classes or teachers first, or filter subject
     if (search) {
+      const subQuery: Record<string, any> = {};
+      if (role !== "Super Admin") subQuery.schoolId = schoolId;
+
       const [matchedClasses, matchedTeachers] = await Promise.all([
-        Class.find({ name: { $regex: search, $options: "i" } }).select("_id"),
-        Teacher.find({ name: { $regex: search, $options: "i" } }).select("_id"),
+        Class.find({ ...subQuery, name: { $regex: search, $options: "i" } }).select("_id"),
+        Teacher.find({ ...subQuery, name: { $regex: search, $options: "i" } }).select("_id"),
       ]);
 
       const classIds = matchedClasses.map((c) => c._id);
@@ -58,10 +67,13 @@ export async function GET(request: Request) {
       .limit(limit);
 
     // Compute stats
+    const statsQuery: Record<string, any> = {};
+    if (role !== "Super Admin") statsQuery.schoolId = schoolId;
+
     const [totalSlots, distinctClasses, distinctTeachers] = await Promise.all([
-      Timetable.countDocuments({}),
-      Timetable.distinct("classId"),
-      Timetable.distinct("teacherId"),
+      Timetable.countDocuments(statsQuery),
+      Timetable.distinct("classId", statsQuery),
+      Timetable.distinct("teacherId", statsQuery),
     ]);
 
     const stats = {
@@ -73,7 +85,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ data: slots, total, stats, page, limit });
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to fetch timetable slots", error },
+      { message: "Failed to fetch timetable slots", error: (error as Error).message },
       { status: 500 }
     );
   }
@@ -81,23 +93,44 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+    const { schoolId, role } = session;
+
     await connectDB();
     const body = await request.json();
 
+    const targetSchoolId = role === "Super Admin" ? (body.schoolId || null) : schoolId;
+    if (!targetSchoolId && role !== "Super Admin") {
+      return NextResponse.json({ message: "School Tenant ID required" }, { status: 400 });
+    }
+
     // Verify references exist
     const [classExists, teacherExists] = await Promise.all([
-      Class.findById(body.classId),
-      Teacher.findById(body.teacherId),
+      Class.findOne({ _id: body.classId, schoolId: targetSchoolId }),
+      Teacher.findOne({ _id: body.teacherId, schoolId: targetSchoolId }),
     ]);
 
     if (!classExists) {
-      return NextResponse.json({ message: "Selected Class does not exist" }, { status: 400 });
+      return NextResponse.json({ message: "Selected Class does not exist in your school" }, { status: 400 });
     }
     if (!teacherExists) {
-      return NextResponse.json({ message: "Selected Teacher does not exist" }, { status: 400 });
+      return NextResponse.json({ message: "Selected Teacher does not exist in your school" }, { status: 400 });
     }
 
-    const slot = await Timetable.create(body);
+    const slot = await Timetable.create({
+      schoolId: targetSchoolId,
+      classId: body.classId,
+      subject: body.subject,
+      teacherId: body.teacherId,
+      dayOfWeek: body.dayOfWeek,
+      startTime: body.startTime,
+      endTime: body.endTime,
+      classroom: body.classroom ?? "",
+    });
+
     return NextResponse.json(slot, { status: 201 });
   } catch (error) {
     const err = error as { code?: number };
@@ -108,7 +141,7 @@ export async function POST(request: Request) {
       );
     }
     return NextResponse.json(
-      { message: "Failed to create timetable slot", error },
+      { message: "Failed to create timetable slot", error: (error as Error).message },
       { status: 500 }
     );
   }

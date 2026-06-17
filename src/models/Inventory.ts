@@ -8,6 +8,12 @@ const InventorySchema = new Schema(
       trim: true,
     },
 
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
+    },
+
     category: {
       type: String,
       required: true,

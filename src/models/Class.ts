@@ -14,6 +14,12 @@ const ClassSchema = new Schema(
       trim: true,
     },
 
+    schoolId: {
+      type: Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
+    },
+
     classTeacher: {
       type: Schema.Types.ObjectId,
       ref: "Teacher",
@@ -40,7 +46,7 @@ const ClassSchema = new Schema(
   },
 );
 
-ClassSchema.index({ name: 1, section: 1 }, { unique: true });
+ClassSchema.index({ schoolId: 1, name: 1, section: 1 }, { unique: true });
 
 const Class = models.Class || model("Class", ClassSchema);
 
