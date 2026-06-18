@@ -16,7 +16,8 @@ export type AppModule =
   | "notices"
   | "notifications"
   | "reports"
-  | "settings";
+  | "settings"
+  | "admissions";
 
 export const ROLE_PERMISSIONS: Record<UserRole, AppModule[]> = {
   "Super Admin": [
@@ -36,6 +37,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, AppModule[]> = {
     "notifications",
     "reports",
     "settings",
+    "admissions",
   ],
   Admin: [
     "dashboard",
@@ -54,6 +56,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, AppModule[]> = {
     "notifications",
     "reports",
     "settings",
+    "admissions",
   ],
   Teacher: [
     "dashboard",
@@ -66,6 +69,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, AppModule[]> = {
     "homework",
     "notices",
     "notifications",
+    "admissions",
   ],
   Student: [
     "dashboard",

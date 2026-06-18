@@ -28,9 +28,12 @@ export function useUpdateStudent() {
       return response.json();
     },
 
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["students"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["student", variables.id],
       });
     },
   });

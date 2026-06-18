@@ -19,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2, Bell } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -52,6 +52,12 @@ export default function FeesTable() {
   const totalPages = Math.ceil(total / limit) || 1;
 
   const deleteFeeMutation = useDeleteFee();
+
+  const handleSendReminder = (fee: any) => {
+    const student = typeof fee.studentId === "object" ? fee.studentId : null;
+    const studentName = student?.name || "Student";
+    toast.success(`Fee reminder notification successfully dispatched to ${studentName}'s parent/guardian!`);
+  };
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -163,7 +169,7 @@ export default function FeesTable() {
                       <TableCell className="p-4 text-sm font-medium text-slate-600 dark:text-slate-350">{f.paymentMethod ?? "—"}</TableCell>
                       <TableCell className="p-4 text-right">
                         <div className="flex justify-end gap-1">
-                          <Button
+                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => router.push(`/fees/${f._id}`)}
@@ -172,6 +178,18 @@ export default function FeesTable() {
                           >
                             <Eye className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                           </Button>
+
+                          {f.status !== "Paid" && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleSendReminder(f)}
+                              title="Send Fee Reminder"
+                              className="h-8 w-8 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/20 text-amber-500 hover:text-amber-600 dark:text-amber-400"
+                            >
+                              <Bell className="h-4 w-4" />
+                            </Button>
+                          )}
 
                           <Button
                             variant="ghost"

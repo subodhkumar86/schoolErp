@@ -69,6 +69,8 @@ export async function PUT(request: Request, { params }: Params) {
         parentName: body.parentName,
         parentPhone: body.parentPhone,
         status: body.status,
+        attendance: body.attendance,
+        documents: body.documents,
       },
       { new: true, runValidators: true },
     );

@@ -16,6 +16,7 @@ import {
   Settings,
   Bell,
   BookOpen,
+  BookMarked,
   ClipboardList,
   Boxes,
   Clock,
@@ -23,6 +24,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LucideIcon,
+  UserPlus,
 } from "lucide-react";
 
 interface MenuItem {
@@ -40,6 +42,12 @@ const menuItems: MenuItem[] = [
     module: "dashboard",
   },
   {
+    title: "Admissions",
+    href: "/admissions",
+    icon: UserPlus,
+    module: "admissions",
+  },
+  {
     title: "Students",
     href: "/students",
     icon: Users,
@@ -50,6 +58,12 @@ const menuItems: MenuItem[] = [
     href: "/teachers",
     icon: GraduationCap,
     module: "teachers",
+  },
+  {
+    title: "Subjects",
+    href: "/subjects",
+    icon: BookMarked,
+    module: "subjects",
   },
   {
     title: "Attendance",

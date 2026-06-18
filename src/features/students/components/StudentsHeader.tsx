@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import CreateStudentDialog from "./CreateStudentDialog";
 
 export default function StudentsHeader() {
@@ -11,7 +14,15 @@ export default function StudentsHeader() {
         <p className="text-muted-foreground">Manage all students</p>
       </div>
 
-      <CreateStudentDialog />
+      <div className="flex items-center gap-3">
+        <Link href="/students/promote" passHref legacyBehavior>
+          <Button variant="outline" className="flex items-center gap-2 rounded-xl border-slate-200">
+            <ArrowUpRight className="h-4 w-4" />
+            Class Promotion
+          </Button>
+        </Link>
+        <CreateStudentDialog />
+      </div>
     </div>
   );
 }

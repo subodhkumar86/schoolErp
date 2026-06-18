@@ -80,6 +80,26 @@ const StudentSchema = new Schema(
       type: Number,
       default: 100,
     },
+
+    documents: {
+      type: [
+        {
+          name: { type: String, required: true },
+          status: {
+            type: String,
+            enum: ["Submitted", "Pending", "Verified"],
+            default: "Pending",
+          },
+          submittedAt: { type: Date },
+        },
+      ],
+      default: () => [
+        { name: "Birth Certificate", status: "Pending" },
+        { name: "Transfer Certificate (TC)", status: "Pending" },
+        { name: "Previous Report Card", status: "Pending" },
+        { name: "Passport Photo", status: "Pending" },
+      ],
+    },
   },
   {
     timestamps: true,

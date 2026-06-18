@@ -4,6 +4,8 @@ import NotificationSettings from "@/features/settings/components/NotificationSet
 import UserPreferences from "@/features/settings/components/UserPreferences";
 import ChangePasswordForm from "@/features/settings/components/ChangePasswordForm";
 import SystemDiagnostics from "@/features/settings/components/SystemDiagnostics";
+import SessionRolloverPanel from "@/features/settings/components/SessionRolloverPanel";
+import AuditLogsPanel from "@/features/settings/components/AuditLogsPanel";
 
 export default function SettingsPage() {
   return (
@@ -24,6 +26,10 @@ export default function SettingsPage() {
       <UserPreferences />
 
       <ChangePasswordForm />
+
+      <SessionRolloverPanel />
+
+      <AuditLogsPanel />
 
       <SystemDiagnostics />
     </div>

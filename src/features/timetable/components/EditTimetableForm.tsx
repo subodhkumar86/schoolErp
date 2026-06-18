@@ -8,6 +8,7 @@ import { timetableSchema, type TimetableFormValues } from "../schemas/timetableS
 import { useUpdateTimetable } from "../hooks/useUpdateTimetable";
 import { useClasses } from "@/features/classes/hooks/useClasses";
 import { useTeachers } from "@/features/teachers/hooks/useTeachers";
+import { useSubjects } from "@/features/subjects/hooks/useSubjects";
 import type { TimetableSlotType } from "../types/timetable";
 
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ export default function EditTimetableForm({ slot }: EditTimetableFormProps) {
   const updateSlot = useUpdateTimetable();
   const { data: classesRes, isLoading: classesLoading } = useClasses({ limit: 1000 });
   const { data: teachersRes, isLoading: teachersLoading } = useTeachers({ limit: 1000 });
+  const { data: subjectsRes, isLoading: subjectsLoading } = useSubjects({ limit: 1000 });
 
   const classIdVal = typeof slot.classId === "object" ? slot.classId._id : slot.classId;
   const teacherIdVal = typeof slot.teacherId === "object" ? slot.teacherId._id : slot.teacherId;
@@ -59,12 +61,13 @@ export default function EditTimetableForm({ slot }: EditTimetableFormProps) {
     }
   };
 
-  if (classesLoading || teachersLoading) {
+  if (classesLoading || teachersLoading || subjectsLoading) {
     return <Loader />;
   }
 
   const classes = classesRes?.data ?? [];
   const teachers = teachersRes?.data ?? [];
+  const subjects = subjectsRes?.data ?? [];
 
   return (
     <form
@@ -94,12 +97,18 @@ export default function EditTimetableForm({ slot }: EditTimetableFormProps) {
 
           <div>
             <Label htmlFor="subject">Subject</Label>
-            <Input
+            <select
               id="subject"
-              placeholder="e.g. Mathematics"
               {...register("subject")}
-              className="mt-1"
-            />
+              className="mt-1 w-full h-10 rounded-md border bg-background px-3 text-sm focus:outline-none"
+            >
+              <option value="">Select a Subject</option>
+              {subjects.map((sub) => (
+                <option key={sub._id} value={sub.name}>
+                  {sub.name} ({sub.code})
+                </option>
+              ))}
+            </select>
             {errors.subject && (
               <p className="mt-1 text-sm text-red-500">{errors.subject.message}</p>
             )}
