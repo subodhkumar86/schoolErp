@@ -14,10 +14,10 @@ if (fs.existsSync(localEnvPath)) {
 
 // Inline mock/re-import validation schemas to avoid Next.js module resolver conflicts in pure node env
 // We will test the schema validation logic directly
-import { studentSchema } from "../features/students/schemas/studentSchema";
-import { attendanceSchema } from "../features/attendance/schemas/attendanceSchema";
-import { feeSchema } from "../features/fees/schemas/feeSchema";
-import { hashPassword, comparePassword, signJWT, verifyJWT } from "../lib/auth";
+import { studentSchema } from "../features/students/schemas/studentSchema.ts";
+import { attendanceSchema } from "../features/attendance/schemas/attendanceSchema.ts";
+import { feeSchema } from "../features/fees/schemas/feeSchema.ts";
+import { hashPassword, comparePassword, signJWT, verifyJWT } from "../lib/auth.ts";
 
 const loginSchema = z.object({
   identifier: z.string().min(3, "Username or Email must be at least 3 characters"),

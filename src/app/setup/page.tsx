@@ -21,6 +21,7 @@ import {
   Plus,
   Trash2,
   AlertCircle,
+  Sparkles,
 } from "lucide-react";
 
 interface ClassItem {
@@ -58,6 +59,98 @@ export default function SetupWizardPage() {
   const { user, isLoading: authLoading } = useMe();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+
+  const handlePrefillDemoData = () => {
+    setSchoolDetails({
+      schoolName: "Apex International Academy",
+      schoolEmail: "admin@apexacademy.edu",
+      schoolPhone: "+91 98765 43210",
+      schoolAddress: "Plot 45, Sector 62, Noida, UP, India",
+      timezone: "Asia/Kolkata",
+      currency: "INR",
+    });
+    setSessionDetails({
+      sessionYear: "2026-2027",
+    });
+    setClassesList([
+      { name: "Class 10", section: "A", capacity: 40, subjects: [] },
+      { name: "Class 10", section: "B", capacity: 40, subjects: [] },
+      { name: "Class 9", section: "A", capacity: 35, subjects: [] },
+    ]);
+    setClassSubjects({
+      "Class 10-A": "Mathematics, Physics, Chemistry, English, Computer Science",
+      "Class 10-B": "Mathematics, Biology, Chemistry, English, History",
+      "Class 9-A": "Mathematics, General Science, Social Studies, English",
+    });
+    setTeachersList([
+      {
+        name: "Karan Sharma",
+        email: "karan@apexacademy.edu",
+        phone: "+91 99999 11111",
+        employeeId: "EMP001",
+        qualification: "M.Sc Physics",
+        salary: 45000,
+        subjects: ["Physics", "Mathematics"],
+      },
+      {
+        name: "Priya Patel",
+        email: "priya@apexacademy.edu",
+        phone: "+91 99999 22222",
+        employeeId: "EMP002",
+        qualification: "M.Sc Chemistry",
+        salary: 42000,
+        subjects: ["Chemistry", "Science"],
+      },
+      {
+        name: "Amit Kumar",
+        email: "amit@apexacademy.edu",
+        phone: "+91 99999 33333",
+        employeeId: "EMP003",
+        qualification: "MCA",
+        salary: 48000,
+        subjects: ["Computer Science"],
+      },
+    ]);
+    setStudentsList([
+      {
+        name: "Subodh Kumar",
+        email: "subodh@apexacademy.edu",
+        phone: "+91 88888 11111",
+        rollNumber: "ROLL101",
+        studentClass: "Class 10",
+        section: "A",
+        gender: "Male",
+        dateOfBirth: "2010-06-15",
+        parentName: "Rajesh Kumar",
+        parentPhone: "+91 77777 11111",
+      },
+      {
+        name: "Sneha Gupta",
+        email: "sneha@apexacademy.edu",
+        phone: "+91 88888 22222",
+        rollNumber: "ROLL102",
+        studentClass: "Class 10",
+        section: "B",
+        gender: "Female",
+        dateOfBirth: "2010-08-22",
+        parentName: "Alok Gupta",
+        parentPhone: "+91 77777 22222",
+      },
+      {
+        name: "Aditya Roy",
+        email: "aditya@apexacademy.edu",
+        phone: "+91 88888 33333",
+        rollNumber: "ROLL901",
+        studentClass: "Class 9",
+        section: "A",
+        gender: "Male",
+        dateOfBirth: "2011-03-10",
+        parentName: "Bikram Roy",
+        parentPhone: "+91 77777 33333",
+      },
+    ]);
+    toast.success("Demo configuration data pre-filled successfully! Feel free to review the steps.");
+  };
 
   // Step 1 State: School Details
   const [schoolDetails, setSchoolDetails] = useState({
@@ -405,6 +498,18 @@ export default function SetupWizardPage() {
               </div>
             );
           })}
+        </div>
+
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+          <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400">Institutional Configuration Settings</h2>
+          <Button
+            onClick={handlePrefillDemoData}
+            variant="outline"
+            className="rounded-2xl border border-blue-200 bg-blue-50/50 text-blue-700 hover:bg-blue-100/80 dark:border-blue-900/50 dark:bg-blue-950/30 dark:text-blue-400 font-bold flex items-center gap-1.5 active:scale-95 transition-all text-xs px-4 py-2"
+          >
+            <Sparkles className="h-4 w-4 text-blue-500 animate-pulse" />
+            Pre-fill Demo Setup Data
+          </Button>
         </div>
 
         {/* Wizard Step Body */}

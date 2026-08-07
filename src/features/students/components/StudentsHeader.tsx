@@ -15,12 +15,12 @@ export default function StudentsHeader() {
       </div>
 
       <div className="flex items-center gap-3">
-        <Link href="/students/promote" passHref legacyBehavior>
-          <Button variant="outline" className="flex items-center gap-2 rounded-xl border-slate-200">
+        <Button asChild variant="outline" className="flex items-center gap-2 rounded-xl border-slate-200">
+          <Link href="/students/promote">
             <ArrowUpRight className="h-4 w-4" />
             Class Promotion
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         <CreateStudentDialog />
       </div>
     </div>

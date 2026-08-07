@@ -42,12 +42,12 @@ export default function ExamDetailPage() {
           </div>
         </div>
 
-        <Link href={`/exams/${examId}/edit`} passHref legacyBehavior>
-          <Button className="flex items-center gap-2">
+        <Button asChild className="flex items-center gap-2">
+          <Link href={`/exams/${examId}/edit`}>
             <Pencil className="h-4 w-4" />
             Edit Exam
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       <div className="rounded-3xl border bg-card p-8 shadow-sm space-y-8">

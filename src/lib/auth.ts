@@ -1,8 +1,14 @@
 import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 
-const JWT_SECRET = process.env.JWT_SECRET || "development_fallback_jwt_secret_value_not_used_in_prod";
-const KEY = new TextEncoder().encode(JWT_SECRET);
+function getJwtKey() {
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    throw new Error("JWT_SECRET is not configured");
+  }
+
+  return new TextEncoder().encode(jwtSecret);
+}
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
@@ -26,12 +32,12 @@ export async function signJWT(payload: JWTPayload, rememberMe = false): Promise<
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(expirationTime)
-    .sign(KEY);
+    .sign(getJwtKey());
 }
 
 export async function verifyJWT(token: string): Promise<JWTPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, KEY);
+    const { payload } = await jwtVerify(token, getJwtKey());
     return payload as unknown as JWTPayload;
   } catch {
     return null;

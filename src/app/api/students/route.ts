@@ -78,8 +78,8 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     const targetSchoolId = role === "Super Admin" ? (body.schoolId || null) : schoolId;
-    if (!targetSchoolId && role !== "Super Admin") {
-      return NextResponse.json({ message: "School Tenant ID required" }, { status: 400 });
+    if (!targetSchoolId) {
+      return NextResponse.json({ message: "School Tenant ID is required" }, { status: 400 });
     }
 
     const student = await Student.create({

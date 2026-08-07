@@ -34,6 +34,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
+    const isSuperAdmin = payload.role === "Super Admin";
+    if (!isSuperAdmin) {
+      if (!payload.schoolId || String(user.schoolId) !== payload.schoolId) {
+        return NextResponse.json({ message: "Forbidden: Cross-school password reset is not allowed" }, { status: 403 });
+      }
+      if (user.role === "Super Admin") {
+        return NextResponse.json({ message: "Forbidden: Super Admin password reset is not allowed" }, { status: 403 });
+      }
+    }
+
     user.password = await hashPassword(newPassword);
     await user.save();
 

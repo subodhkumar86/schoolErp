@@ -14,12 +14,12 @@ export default function ResultsHeader() {
         </p>
       </div>
 
-      <Link href="/results/create" passHref legacyBehavior>
-        <Button className="flex items-center gap-2">
+      <Button asChild className="flex items-center gap-2">
+        <Link href="/results/create">
           <Plus className="h-4 w-4" />
           Add Result
-        </Button>
-      </Link>
+        </Link>
+      </Button>
     </div>
   );
 }

@@ -47,12 +47,12 @@ export default function FeeDetailPage() {
           </div>
         </div>
 
-        <Link href={`/fees/${feeId}/edit`} passHref legacyBehavior>
-          <Button className="flex items-center gap-2">
+        <Button asChild className="flex items-center gap-2">
+          <Link href={`/fees/${feeId}/edit`}>
             <Pencil className="h-4 w-4" />
             Edit Record
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       <div className="rounded-3xl border bg-card p-8 shadow-sm space-y-8">

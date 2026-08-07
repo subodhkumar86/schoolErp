@@ -15,12 +15,12 @@ export default function NotificationsPage() {
           </p>
         </div>
 
-        <Link href="/notifications/create" passHref legacyBehavior>
-          <Button className="flex items-center gap-2">
+        <Button asChild className="flex items-center gap-2">
+          <Link href="/notifications/create">
             <Plus className="h-4 w-4" />
             Compose Notification
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       <NotificationStats />

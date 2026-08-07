@@ -14,12 +14,12 @@ export default function HomeworkHeader() {
         </p>
       </div>
 
-      <Link href="/homework/create" passHref legacyBehavior>
-        <Button className="flex items-center gap-2">
+      <Button asChild className="flex items-center gap-2">
+        <Link href="/homework/create">
           <Plus className="h-4 w-4" />
           Add Assignment
-        </Button>
-      </Link>
+        </Link>
+      </Button>
     </div>
   );
 }

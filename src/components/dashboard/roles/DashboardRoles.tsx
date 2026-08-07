@@ -30,6 +30,7 @@ import {
   AreaChart,
   Area,
 } from "recharts";
+import ChartClientOnly from "@/components/charts/ChartClientOnly";
 
 // ----------------------------------------------------
 // 1. SUPER ADMIN DASHBOARD
@@ -109,7 +110,7 @@ export function SuperAdminDashboard({ stats }: { stats: any }) {
           {planData.length === 0 ? (
             <div className="h-[250px] flex items-center justify-center text-slate-400 dark:text-slate-500 text-sm">No subscriptions seeded yet.</div>
           ) : (
-            <div className="h-[250px]">
+            <ChartClientOnly className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie data={planData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} fill="#8884d8" label>
@@ -120,7 +121,7 @@ export function SuperAdminDashboard({ stats }: { stats: any }) {
                   <Tooltip contentStyle={{ borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)" }} />
                 </PieChart>
               </ResponsiveContainer>
-            </div>
+            </ChartClientOnly>
           )}
         </div>
 
@@ -427,7 +428,7 @@ export function ParentDashboard({ stats: _stats }: { stats: any }) {
         {/* Child Performance Chart */}
         <div className="border border-slate-200/50 bg-white/70 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-950/70 p-6 rounded-3xl shadow-sm space-y-4">
           <h4 className="text-lg font-bold text-slate-900 dark:text-slate-50">Child Performance Chart</h4>
-          <div className="h-[250px]">
+          <ChartClientOnly className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={[
                 { subject: "Maths", marks: 95 },
@@ -448,7 +449,7 @@ export function ParentDashboard({ stats: _stats }: { stats: any }) {
                 <Area type="monotone" dataKey="marks" stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#marksGrad)" />
               </AreaChart>
             </ResponsiveContainer>
-          </div>
+          </ChartClientOnly>
         </div>
 
         {/* Child Fee Status */}
@@ -506,7 +507,7 @@ export function AccountantDashboard({ stats: _stats }: { stats: any }) {
         {/* Revenue Graph */}
         <div className="border border-slate-200/50 bg-white/70 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-950/70 p-6 rounded-3xl shadow-sm space-y-4">
           <h4 className="text-lg font-bold text-slate-900 dark:text-slate-50">Revenue Graph</h4>
-          <div className="h-[250px]">
+          <ChartClientOnly className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={[
                 { month: "Jan", collected: 45000 },
@@ -521,7 +522,7 @@ export function AccountantDashboard({ stats: _stats }: { stats: any }) {
                 <Bar dataKey="collected" fill="#10B981" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          </div>
+          </ChartClientOnly>
         </div>
 
         {/* Quick Actions */}

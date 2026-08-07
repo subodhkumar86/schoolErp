@@ -18,7 +18,16 @@ import { hashPassword } from "./auth";
 
 export async function seedUsers() {
   const schoolCount = await School.countDocuments();
-  if (schoolCount > 0) return;
+  if (schoolCount > 0) {
+    const firstSchool = await School.findOne();
+    if (firstSchool) {
+      await User.updateMany(
+        { role: { $ne: "Super Admin" }, schoolId: null },
+        { $set: { schoolId: firstSchool._id } }
+      );
+    }
+    return;
+  }
 
   console.log("Starting multi-tenant database seed...");
 

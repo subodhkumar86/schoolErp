@@ -14,12 +14,12 @@ export default function TransportHeader() {
         </p>
       </div>
 
-      <Link href="/transport/create" passHref legacyBehavior>
-        <Button className="flex items-center gap-2">
+      <Button asChild className="flex items-center gap-2">
+        <Link href="/transport/create">
           <Plus className="h-4 w-4" />
           Add Route
-        </Button>
-      </Link>
+        </Link>
+      </Button>
     </div>
   );
 }

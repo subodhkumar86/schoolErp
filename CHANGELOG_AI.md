@@ -4,6 +4,15 @@ All changes, enhancements, and optimizations made to transform EduFlow ERP into 
 
 ---
 
+## 🆕 Version 1.0.1 (August 6, 2026) - Security Hardening & Scoping Alignments
+
+### Fixed
+- **Attendance ID Security Access:** Patched [src/app/api/attendance/[id]/route.ts](file:///c:/Users/HP/eduflow-erp/src/app/api/attendance/[id]/route.ts) to validate user session and enforce multi-tenant query isolation scoping by `schoolId`.
+- **Rollover API Target Selection:** Enhanced [src/app/api/settings/rollover/route.ts](file:///c:/Users/HP/eduflow-erp/src/app/api/settings/rollover/route.ts) to accept target `schoolId` selection in request body for Super Admins.
+- **Strict School Tenant Scoping:** Aligned POST routes for Students, Teachers, and Classes to require a valid `schoolId` during creation (preventing unhandled mongoose validation exceptions).
+
+---
+
 ## 🆕 Version 1.0.0 (June 16, 2026) - Multi-Tenant SaaS Release
 
 ### Added

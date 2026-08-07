@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import LoginForm from "@/features/auth/components/LoginForm";
 import { CheckCircle, ShieldCheck, Award, Star } from "lucide-react";
 import Link from "next/link";
@@ -97,7 +98,9 @@ export default function LoginPage() {
             <p className="text-xs text-muted-foreground mt-1">SaaS Educational Ecosystem</p>
           </div>
 
-          <LoginForm />
+          <Suspense fallback={<div className="text-center p-4">Loading login form...</div>}>
+            <LoginForm />
+          </Suspense>
         </div>
       </div>
       

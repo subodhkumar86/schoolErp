@@ -14,12 +14,12 @@ export default function TimetableHeader() {
         </p>
       </div>
 
-      <Link href="/timetable/create" passHref legacyBehavior>
-        <Button className="flex items-center gap-2">
+      <Button asChild className="flex items-center gap-2">
+        <Link href="/timetable/create">
           <Plus className="h-4 w-4" />
           Schedule Slot
-        </Button>
-      </Link>
+        </Link>
+      </Button>
     </div>
   );
 }

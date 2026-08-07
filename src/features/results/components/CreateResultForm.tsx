@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -26,7 +26,7 @@ export default function CreateResultForm() {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     setValue,
     formState: { errors },
   } = useForm<ResultFormValues>({
@@ -40,7 +40,10 @@ export default function CreateResultForm() {
     },
   });
 
-  const selectedExamId = watch("examId");
+  const selectedExamId = useWatch({
+    control,
+    name: "examId",
+  });
 
   // Dynamically compute grade on change of marks or exam selection
   const exam = exams.find((e) => e._id === selectedExamId);

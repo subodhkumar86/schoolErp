@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
     await connectDB();
     const body = await request.json();
-    const { nextSession } = body;
+    const { nextSession, schoolId: targetSchoolId } = body;
 
     if (!nextSession || typeof nextSession !== "string") {
       return NextResponse.json({ message: "Next academic session year is required" }, { status: 400 });
@@ -23,6 +23,8 @@ export async function POST(request: Request) {
     const query: Record<string, any> = {};
     if (role !== "Super Admin") {
       query.schoolId = schoolId;
+    } else if (targetSchoolId) {
+      query.schoolId = targetSchoolId;
     }
 
     const setting = await Setting.findOneAndUpdate(

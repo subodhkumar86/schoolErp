@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -23,21 +23,35 @@ type LoginSchema = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const queryUsername = searchParams.get("username") || "";
+  const queryPassword = searchParams.get("password") || "";
   const loginMutation = useLogin();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      identifier: "",
-      password: "",
+      identifier: "admin",
+      password: "password123",
       rememberMe: false,
     },
   });
+
+  useEffect(() => {
+    if (queryUsername || queryPassword) {
+      reset({
+        identifier: queryUsername,
+        password: queryPassword,
+        rememberMe: false,
+      });
+    }
+  }, [queryUsername, queryPassword, reset]);
 
   const onSubmit = async (data: LoginSchema) => {
     try {

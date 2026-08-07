@@ -59,12 +59,12 @@ export default function ResultDetailPage() {
           </div>
         </div>
 
-        <Link href={`/results/${resultId}/edit`} passHref legacyBehavior>
-          <Button className="flex items-center gap-2">
+        <Button asChild className="flex items-center gap-2">
+          <Link href={`/results/${resultId}/edit`}>
             <Pencil className="h-4 w-4" />
             Edit Result
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       <div className="rounded-3xl border bg-card p-8 shadow-sm space-y-8">

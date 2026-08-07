@@ -4,134 +4,14 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMe } from "@/features/auth/hooks/useMe";
-import { hasPermission, type AppModule, type UserRole } from "@/features/auth/permissions";
+import { hasPermission, type UserRole } from "@/features/auth/permissions";
+import { sidebarMenuItems } from "@/constants/sidebar";
 
 import {
-  LayoutDashboard,
-  Users,
   GraduationCap,
-  CalendarCheck,
-  Wallet,
-  FileText,
-  Settings,
-  Bell,
-  BookOpen,
-  BookMarked,
-  ClipboardList,
-  Boxes,
-  Clock,
-  Megaphone,
   ChevronLeft,
   ChevronRight,
-  LucideIcon,
-  UserPlus,
 } from "lucide-react";
-
-interface MenuItem {
-  title: string;
-  href: string;
-  icon: LucideIcon;
-  module: AppModule;
-}
-
-const menuItems: MenuItem[] = [
-  {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-    module: "dashboard",
-  },
-  {
-    title: "Admissions",
-    href: "/admissions",
-    icon: UserPlus,
-    module: "admissions",
-  },
-  {
-    title: "Students",
-    href: "/students",
-    icon: Users,
-    module: "students",
-  },
-  {
-    title: "Teachers",
-    href: "/teachers",
-    icon: GraduationCap,
-    module: "teachers",
-  },
-  {
-    title: "Subjects",
-    href: "/subjects",
-    icon: BookMarked,
-    module: "subjects",
-  },
-  {
-    title: "Attendance",
-    href: "/attendance",
-    icon: CalendarCheck,
-    module: "attendance",
-  },
-  {
-    title: "Timetable",
-    href: "/timetable",
-    icon: Clock,
-    module: "classes",
-  },
-  {
-    title: "Fees",
-    href: "/fees",
-    icon: Wallet,
-    module: "fees",
-  },
-  {
-    title: "Exams",
-    href: "/exams",
-    icon: FileText,
-    module: "exams",
-  },
-  {
-    title: "Homework",
-    href: "/homework",
-    icon: ClipboardList,
-    module: "homework",
-  },
-  {
-    title: "Library",
-    href: "/library",
-    icon: BookOpen,
-    module: "library",
-  },
-  {
-    title: "Inventory",
-    href: "/inventory",
-    icon: Boxes,
-    module: "inventory",
-  },
-  {
-    title: "Reports",
-    href: "/reports",
-    icon: FileText,
-    module: "reports",
-  },
-  {
-    title: "Notices",
-    href: "/notices",
-    icon: Megaphone,
-    module: "notices",
-  },
-  {
-    title: "Notifications",
-    href: "/notifications",
-    icon: Bell,
-    module: "notifications",
-  },
-  {
-    title: "Settings",
-    href: "/settings",
-    icon: Settings,
-    module: "settings",
-  },
-];
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -141,7 +21,7 @@ export default function Sidebar() {
   const role = user?.role as UserRole | undefined;
 
   // Filter links based on RBAC permissions
-  const filteredMenuItems = menuItems.filter((item) => {
+  const filteredMenuItems = sidebarMenuItems.filter((item) => {
     if (!role) return false;
     return hasPermission(role, item.module);
   });

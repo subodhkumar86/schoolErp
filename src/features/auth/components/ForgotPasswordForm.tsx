@@ -17,11 +17,11 @@ export default function ForgotPasswordForm() {
       </div>
 
       <div className="space-y-4">
-        <Link href="/login" passHref legacyBehavior>
-          <Button variant="outline" className="w-full">
+        <Button asChild variant="outline" className="w-full">
+          <Link href="/login">
             Back to Login
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
     </div>
   );

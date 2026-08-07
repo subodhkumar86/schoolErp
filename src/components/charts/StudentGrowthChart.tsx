@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import ChartClientOnly from "./ChartClientOnly";
 
 const data = [
   { month: "Jan", students: 800 },
@@ -23,7 +24,7 @@ export default function StudentGrowthChart() {
     <div className="rounded-lg border p-6">
       <h3 className="mb-4 text-lg font-semibold">Student Growth</h3>
 
-      <div className="h-[300px]">
+      <ChartClientOnly className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
             <XAxis dataKey="month" />
@@ -38,7 +39,7 @@ export default function StudentGrowthChart() {
             />
           </LineChart>
         </ResponsiveContainer>
-      </div>
+      </ChartClientOnly>
     </div>
   );
 }

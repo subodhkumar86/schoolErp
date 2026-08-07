@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+export const dynamic = "force-dynamic";
 import { connectDB } from "@/lib/mongodb";
 import Student from "@/models/Student";
 import Attendance from "@/models/Attendance";
@@ -7,6 +8,7 @@ import { studentSchema } from "@/features/students/schemas/studentSchema";
 import { attendanceSchema } from "@/features/attendance/schemas/attendanceSchema";
 import { feeSchema } from "@/features/fees/schemas/feeSchema";
 import { hashPassword, comparePassword, signJWT, verifyJWT } from "@/lib/auth";
+import { getSession } from "@/lib/session";
 import { z } from "zod";
 
 // Zod schema for testing login validations
@@ -25,6 +27,15 @@ interface TestResult {
 }
 
 export async function GET() {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+  }
+
+  if (session.role !== "Super Admin") {
+    return NextResponse.json({ message: "Forbidden: Super Admin access required" }, { status: 403 });
+  }
+
   const startTime = Date.now();
   const results: TestResult[] = [];
 
@@ -222,6 +233,7 @@ export async function GET() {
       name: "Diagnostics Student Test",
       email: "diagnostics@school.com",
       rollNumber: "DIAG-TEST-999",
+      schoolId: "650c1f6d9d146c2b189999f1",
       studentClass: "Class 10",
       section: "A",
       gender: "Other",
@@ -269,6 +281,7 @@ export async function GET() {
     const attendanceRecord = await Attendance.create({
       entityId: testStudentId,
       entityType: "Student",
+      schoolId: "650c1f6d9d146c2b189999f1",
       date: today,
       status: "Present",
       remarks: "System check Present",
@@ -296,6 +309,7 @@ export async function GET() {
 
     const invoice = await Fee.create({
       studentId: testStudentId,
+      schoolId: "650c1f6d9d146c2b189999f1",
       feeType: "Exam",
       amount: 500,
       dueDate: new Date(),

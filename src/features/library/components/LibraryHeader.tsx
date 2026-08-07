@@ -14,12 +14,12 @@ export default function LibraryHeader() {
         </p>
       </div>
 
-      <Link href="/library/create" passHref legacyBehavior>
-        <Button className="flex items-center gap-2">
+      <Button asChild className="flex items-center gap-2">
+        <Link href="/library/create">
           <Plus className="h-4 w-4" />
           Add Book
-        </Button>
-      </Link>
+        </Link>
+      </Button>
     </div>
   );
 }

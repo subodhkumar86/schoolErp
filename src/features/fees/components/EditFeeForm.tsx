@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -52,7 +52,7 @@ export default function EditFeeForm({ fee }: EditFeeFormProps) {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors },
   } = useForm<FeeFormValues>({
     resolver: zodResolver(feeSchema) as unknown as Resolver<FeeFormValues>,
@@ -69,7 +69,10 @@ export default function EditFeeForm({ fee }: EditFeeFormProps) {
     },
   });
 
-  const selectedStatus = watch("status");
+  const selectedStatus = useWatch({
+    control,
+    name: "status",
+  });
 
   const onSubmit = async (data: FeeFormValues) => {
     try {

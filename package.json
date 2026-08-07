@@ -2,12 +2,13 @@
   "name": "eduflow-erp",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "npx tsx src/scripts/run-tests.ts"
+    "test": "node --experimental-strip-types --experimental-specifier-resolution=node src/scripts/run-tests.ts"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import ThemeToggle from "@/components/shared/ThemeToggle";
 import MobileSidebar from "./MobileSidebar";
 import UserMenu from "./UserMenu";
+import DemoRoleSwitcher from "@/components/dashboard/DemoRoleSwitcher";
 
 export default function Navbar() {
   return (
@@ -40,6 +41,8 @@ export default function Navbar() {
 
         {/* Right Side */}
         <div className="flex items-center gap-3">
+          <DemoRoleSwitcher />
+          
           <ThemeToggle />
 
           {/* Notification */}
